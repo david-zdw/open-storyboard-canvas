@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Open Storyboard Canvas app icon">
+  <defs>
+    <linearGradient id="bg" x1="128" y1="64" x2="896" y2="960" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#102336"/>
+      <stop offset="0.52" stop-color="#0b1723"/>
+      <stop offset="1" stop-color="#050a12"/>
+    </linearGradient>
+    <linearGradient id="canvas" x1="218" y1="230" x2="830" y2="748" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1d4353"/>
+      <stop offset="1" stop-color="#0f2635"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="220" y1="284" x2="780" y2="688" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5eead4"/>
+      <stop offset="0.55" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <path d="M190 206h644c40 0 72 32 72 72v470c0 40-32 72-72 72H190c-40 0-72-32-72-72V278c0-40 32-72 72-72Z" fill="#07101a" opacity="0.55"/>
+  <path d="M206 184h612c38 0 68 30 68 68v450c0 38-30 68-68 68H206c-38 0-68-30-68-68V252c0-38 30-68 68-68Z" fill="url(#canvas)" filter="url(#softShadow)"/>
+
+  <g opacity="0.52" stroke="#4b7286" stroke-width="3">
+    <path d="M210 332h602M210 456h602M210 580h602M210 704h602"/>
+    <path d="M334 252v452M458 252v452M582 252v452M706 252v452"/>
+  </g>
+  <g opacity="0.9" stroke="#72f1dc" stroke-width="5">
+    <path d="M210 456h602" opacity="0.36"/>
+    <path d="M458 252v452" opacity="0.36"/>
+  </g>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M328 616C402 530 484 366 586 372c76 4 126 96 172 166" stroke="#2dd4bf" stroke-width="22" opacity="0.34"/>
+    <path d="M328 616C402 530 484 366 586 372c76 4 126 96 172 166" stroke="url(#accent)" stroke-width="12"/>
+    <path d="M336 344c80 26 142 80 188 166 34 64 86 102 154 118" stroke="#38bdf8" stroke-width="8" opacity="0.72"/>
+  </g>
+
+  <g>
+    <circle cx="326" cy="616" r="62" fill="#0a1622" stroke="#7dd3fc" stroke-width="16"/>
+    <circle cx="326" cy="616" r="25" fill="#5eead4"/>
+    <circle cx="336" cy="344" r="54" fill="#0a1622" stroke="#5eead4" stroke-width="15"/>
+    <circle cx="336" cy="344" r="21" fill="#bae6fd"/>
+    <circle cx="586" cy="372" r="58" fill="#0a1622" stroke="#a78bfa" stroke-width="16"/>
+    <circle cx="586" cy="372" r="23" fill="#c4b5fd"/>
+    <circle cx="758" cy="538" r="64" fill="#0a1622" stroke="#38bdf8" stroke-width="16"/>
+    <circle cx="758" cy="538" r="26" fill="#67e8f9"/>
+  </g>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.88">
+    <path d="M224 252h250" stroke="#f8fafc" stroke-width="20"/>
+    <path d="M250 252l54-68M356 252l54-68M462 252l54-68" stroke="#0f172a" stroke-width="20"/>
+    <path d="M680 696a96 96 0 1 0 192 0a96 96 0 1 0-192 0" stroke="#e2e8f0" stroke-width="14" opacity="0.72"/>
+    <path d="M722 696a54 54 0 1 0 108 0a54 54 0 1 0-108 0" stroke="#38bdf8" stroke-width="12" opacity="0.8"/>
+    <path d="M776 616v-42" stroke="#e2e8f0" stroke-width="12" opacity="0.7"/>
+  </g>
+
+  <g fill="#fef9c3">
+    <path d="M756 256l13 35 35 13-35 13-13 35-13-35-35-13 35-13 13-35Z"/>
+    <path d="M652 212l8 22 22 8-22 8-8 22-8-22-22-8 22-8 8-22Z" opacity="0.9"/>
+    <path d="M836 372l7 18 18 7-18 7-7 18-7-18-18-7 18-7 7-18Z" opacity="0.85"/>
+  </g>
+</svg>

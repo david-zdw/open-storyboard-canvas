@@ -1,0 +1,1334 @@
+{
+  "app": {
+    "title": "Open Storyboard Canvas",
+    "subtitle": "AI storyboard canvas"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "clear": "Clear",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "on": "On",
+    "off": "Off"
+  },
+  "blueprintAssetPicker": {
+    "title": "Choose Director Studio reference images",
+    "subtitle": "Click images to multi-select, then add them to the left-side Studio image column",
+    "searchPlaceholder": "Search image names",
+    "empty": "No matching image assets",
+    "selected": "Selected",
+    "confirm": "Add {{count}}"
+  },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "titleBar": {
+    "back": "Back",
+    "switchToEnglish": "English",
+    "switchToChinese": "中文",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Close"
+  },
+  "canvas": {
+    "addImage": "Add Image",
+    "splitStoryboard": "Split Storyboard",
+    "generate": "Generate",
+    "emptyHintTitle": "Double-click to add a node",
+    "emptyHintSubtitle": "Double-click to add a node",
+    "toolbar": {
+      "zoomIn": "Zoom In",
+      "zoomOut": "Zoom Out",
+      "fitView": "Fit View",
+      "lock": "Lock Canvas",
+      "unlock": "Unlock Canvas"
+    }
+  },
+  "tool": {
+    "crop": "Crop",
+    "annotate": "Annotate",
+    "split": "Split"
+  },
+  "toolDialog": {
+    "suffix": " Tool",
+    "noProcessableImage": "No processable image for current node",
+    "processFailed": "Processing failed",
+    "processing": "Processing...",
+    "apply": "Apply",
+    "cropResultTitle": "Crop Result",
+    "annotateResultTitle": "Annotation Result"
+  },
+  "nodeToolbar": {
+    "reupload": "Reupload",
+    "copy": "Copy",
+    "copyText": "Copy Text",
+    "copyErrorReport": "Copy Error",
+    "copied": "Copied",
+    "copySuccess": "Copy succeeded",
+    "copyFailed": "Copy failed",
+    "download": "Download",
+    "downloadSuccess": "Download succeeded",
+    "downloadFailed": "Download failed",
+    "ungroup": "Ungroup",
+    "saveAs": "Save as...",
+    "noDownloadPresetPathsHint": "No preset path. Add one in Settings > General.",
+    "storyboardLine": "Storyboard {{index}}: {{content}}",
+    "multiAngle": "Multi-angle",
+    "lighting": "Lighting",
+    "multiFunction": "Multi-function",
+    "edit": "Edit",
+    "gridSplit": "Grid Split",
+    "panorama": "Panorama",
+    "blueprint": "Director Studio",
+    "promptPreset": "Preset",
+    "promptPresetMenuTitle": "Prompt Presets",
+    "promptPresetEmpty": "No prompt presets yet",
+    "managePromptPresets": "Manage presets in Settings",
+    "zoomPreview": "Preview",
+    "options": {
+      "highDefinition": "High Definition",
+      "expandImage": "Expand Image",
+      "redraw": "Redraw",
+      "erase": "Erase",
+      "matting": "Matting",
+      "crop": "Crop",
+      "annotate": "Annotate",
+      "grid": "{{grid}}",
+      "custom": "Custom"
+    }
+  },
+  "promptPresetPanel": {
+    "title": "Preset Generation",
+    "sourcePreview": "Reference Image",
+    "sourcePreviewHint": "Used as the image source for this preset generation",
+    "modelTitle": "Provider / Model",
+    "presetTitle": "Choose Preset",
+    "selectedPrompt": "Selected Preset Prompt",
+    "generate": "Submit Generation",
+    "submitting": "Submitting...",
+    "errors": {
+      "noSelectedNode": "No node is selected for submission.",
+      "missingSourceImage": "The current node has no image to use as the preset generation source.",
+      "noModel": "No available provider/model is selected. Add a provider in Settings or log in to Dreamina first.",
+      "missingCustomApiKey": "Custom provider \"{{provider}}\" has no API key. Configure it in Settings first.",
+      "missingBuiltinApiKey": "\"{{provider}}\" is missing an API key. Configure it in Settings first.",
+      "unsupportedUpscaleModel": "The selected model is an upscale model and does not support prompt preset generation. Choose an image generation/editing model.",
+      "unsupportedImageReferenceModel": "The selected Dreamina 3.x model only supports text-to-image, so it cannot run a preset with a reference image. Choose Dreamina 4.0+ or another image-to-image model.",
+      "submitFailed": "Failed to submit preset generation task"
+    }
+  },
+  "canvasToolbar": {
+    "assets": "Assets",
+    "assetsTitle": "View current project assets",
+    "addAiImage": "Add AI image node",
+    "addPanorama": "Add panorama node",
+    "createDirectorStudio": "Create and open Director Studio",
+    "createPanoramaDirectorStudio": "Create and open Panorama Director Studio",
+    "panoramaDirectorStudio": "Panorama Studio"
+  },
+  "gridSplit": {
+    "title": "Grid Split",
+    "presets": {
+      "2x2": "2×2 Grid",
+      "3x3": "3×3 Grid",
+      "4x4": "4×4 Grid",
+      "5x5": "5×5 Grid"
+    },
+    "custom": "Custom",
+    "currentSelection": "Current: {{rows}} × {{cols}}"
+  },
+  "edit": {
+    "hd": {
+      "title": "HD",
+      "desc": "Enhance resolution, reduce noise"
+    },
+    "outpainting": {
+      "title": "Outpainting",
+      "desc": "Extend image boundaries, complete background"
+    },
+    "inpainting": {
+      "title": "Redraw",
+      "desc": "Selectively redraw area content"
+    },
+    "erase": {
+      "title": "Erase",
+      "desc": "Intelligently erase unwanted elements"
+    },
+    "matting": {
+      "title": "Matting",
+      "desc": "Extract subject, remove background"
+    },
+    "crop": {
+      "desc": "Adjust frame and composition"
+    },
+    "annotate": {
+      "desc": "Add markers and text on image"
+    }
+  },
+  "modelParams": {
+    "provider": "Provider",
+    "model": "Model",
+    "providerKeyRequiredTitle": "Provider API key required",
+    "providerKeyRequiredDesc": "{{provider}} is not configured yet. Please add its API key in Settings before using it.",
+    "goConfigure": "Go configure",
+    "autoAspectRatio": "Auto",
+    "quality": "Quality",
+    "aspectRatio": "Aspect Ratio",
+    "enableWebSearch": "Enable web search",
+    "otherParams": "Other Params",
+    "extraOptions": "Extra options",
+    "thinkingLevel": "Thinking level",
+    "thinkingLevelDesc": "Only applies to fal Nano Banana 2. High thinking adds extra cost.",
+    "thinkingDisabled": "Off",
+    "thinkingMinimal": "Standard",
+    "thinkingHigh": "High"
+  },
+  "cameraControl": {
+    "title": "Camera Control",
+    "camera": "Camera",
+    "cameraDesc": "Digital cinema camera model",
+    "lens": "Lens",
+    "lensDesc": "Professional cinema lens series",
+    "focalLength": "Focal Length",
+    "focalLengthDesc": "Focal length in millimeters",
+    "aperture": "Aperture",
+    "apertureDesc": "Aperture value (f-stop)",
+    "current": "Current",
+    "apply": "Save",
+    "preset": {
+      "myPresets": "My Presets",
+      "saveAs": "Save as Preset",
+      "saveTitle": "Save Preset",
+      "editTitle": "Edit Preset",
+      "deleteTitle": "Delete Preset",
+      "namePlaceholder": "Enter preset name",
+      "deleteConfirm": "Are you sure you want to delete preset \"{{name}}\"?",
+      "apply": "Apply",
+      "empty": "No presets yet"
+    },
+    "cameras": {
+      "panavision_dxl2": "Panavision DXL2",
+      "arri_alexa_mini_lf": "ARRI Alexa Mini LF",
+      "red_weapon_8k": "RED Weapon 8K",
+      "sony_venice": "Sony Venice",
+      "blackmagic_ursa": "Blackmagic URSA"
+    },
+    "lenses": {
+      "arri_signature_prime": "ARRI Signature Prime",
+      "cooke_s7i": "Cooke S7/i",
+      "zeiss_supreme_prime": "Zeiss Supreme Prime",
+      "canon_cne": "Canon CN-E",
+      "anamorphic": "Anamorphic"
+    }
+  },
+  "directorStudio": {
+    "title": "Director Studio",
+    "open": "Open",
+    "openFullscreen": "Open fullscreen Director Studio",
+    "saveProject": "Save Project",
+    "panoramaImport": "Panorama Import",
+    "projects": "My Projects",
+    "elements": "Elements",
+    "saved": "Saved",
+    "unsaved": "Unsaved",
+    "defaultProjectName": "Director Studio Project {{count}}",
+    "untitledProject": "Untitled Project",
+    "confirmDeleteProject": "Delete \"{{name}}\"?",
+    "confirmSaveBeforeNew": "The current Director Studio has unsaved changes. Save it before creating a new one?",
+    "confirmSaveBeforeSwitch": "The current Director Studio has unsaved changes. OK saves the current project before switching; Cancel switches without saving.",
+    "noSnapshotForCover": "No current snapshot is available for the cover.",
+    "noProjects": "No saved Director Studio projects yet",
+    "noElements": "No elements in the current Director Studio",
+    "noCover": "No cover",
+    "openProject": "Open Project",
+    "renameHint": "Double-click to rename",
+    "renameElementHint": "Double-click to rename element",
+    "createdAt": "Created {{time}}",
+    "updatedAt": "Updated {{time}}",
+    "changeCover": "Use current snapshot as cover",
+    "newProject": "New Director Studio Project",
+    "elementCount": "{{count}} elements",
+    "loadingScene": "Loading Director Studio scene...",
+    "selectElementFirst": "Select an element first",
+    "collapsePanel": "Hide Projects and Elements panel",
+    "openProjectsPanel": "Open Projects panel",
+    "openElementsPanel": "Open Elements panel",
+    "overlay": {
+      "noSelectedNode": "No submittable node is selected",
+      "emptyPrompt": "Director Studio prompt is empty",
+      "noModel": "No available provider/model is selected. Add a provider in Settings or log in to Dreamina first.",
+      "missingBuiltinApiKey": "{{provider}} is missing an API key. Configure it in Settings first.",
+      "missingCustomApiKey": "Custom provider {{provider}} is missing an API key.",
+      "resultTitle": "Director Studio · {{name}}",
+      "untitled": "Untitled",
+      "submitFailed": "Failed to submit Director Studio generation task"
+    },
+    "defaultLabels": {
+      "element": "Element",
+      "copySuffix": " Copy",
+      "pedestrian": "Pedestrian"
+    },
+    "transform": {
+      "move": "Move",
+      "moveTitle": "Move: drag the XYZ axes",
+      "rotate": "Rotate",
+      "rotateTitle": "Rotate: drag the three-axis rings",
+      "scale": "Scale",
+      "scaleTitle": "Scale: drag the axis scale handles",
+      "cancel": "Cancel Transform",
+      "cancelTitle": "Esc cancels the current transform mode",
+      "help": "1 Move · 2 Rotate · 3 Scale · Esc Cancel"
+    },
+    "clearPanorama": "Clear Panorama",
+    "assetFallbackName": "Image {{count}}",
+    "safeFrame": "Safe Frame",
+    "snapshotPreview": "Screenshot Preview",
+    "openSnapshotLightbox": "Open enlarged screenshot preview",
+    "sidePanels": {
+      "inspector": "Properties",
+      "snapshot": "Screenshot Preview"
+    },
+    "snapshotHistory": "Screenshot List",
+    "snapshotCount": "{{count}} shots",
+    "snapshotThumbnail": "Screenshot {{count}}",
+    "selectSnapshot": "Switch to this screenshot",
+    "deleteSnapshot": "Delete this screenshot",
+    "clearCurrentSnapshot": "Clear Current",
+    "clearAllSnapshots": "Clear All",
+    "addToCanvas": "Add to Canvas",
+    "addAllToCanvas": "Add All",
+    "addAllToCanvasTitle": "Add every screenshot to the canvas in list order",
+    "addToCanvasTitle": "Create an editable AI image node and connect the screenshot plus linked references",
+    "addToCanvasNoSnapshot": "Capture a screenshot before adding it to the canvas.",
+    "addToCanvasEmpty": "Place at least one person/object, or add a scene prompt first.",
+    "addToCanvasFailed": "Failed to add the screenshot to the canvas.",
+    "legacyPanel": {
+      "errors": {
+        "emptyScene": "Place at least one person/object, or add a scene description.",
+        "panoramaRequiresImage": "Panorama environment mode needs a selected usable image first."
+      },
+      "confirmDeleteItem": "Delete \"{{name}}\"?",
+      "confirmDeleteAction": "Delete action preset \"{{name}}\"?",
+      "customActionFallback": "Custom Action",
+      "referenceTokenName": "Image{{index}}",
+      "sceneDefaultLabel": "Scene Setup",
+      "objectDefaultName": "Object {{count}}",
+      "title": "Director Studio · 3D Spatial Layout",
+      "subtitle": "Generate from the top · Import references on the left · Place in the center · Edit objects on the right",
+      "generate": "Generate from Studio",
+      "importImages": "Import Images",
+      "importedCount": "{{imported}} / {{total}} added to Director Studio",
+      "emptyReferences": "No reference images imported yet",
+      "referenceListItem": "Image {{index}} · {{label}}",
+      "addFromAssets": "Add images from assets",
+      "manageImages": "Add / Manage Images",
+      "flatModeTitle": "Flat Director Studio: place people and objects on a 3D ground plane",
+      "flatMode": "3D Ground",
+      "panoramaModeTitle": "Panorama Director Studio: use the selected panorama as an environment sphere and place people in the scene",
+      "panoramaMode": "Panorama Environment",
+      "panoramaRequiresSelectionSuffix": " (select an image node first)",
+      "loadingEditor": "Loading 3D editor...",
+      "workflow": {
+        "add": "Add",
+        "select": "Select",
+        "itemSummary": "Subjects {{subjects}} · Scenes {{scenes}} · References {{refs}}",
+        "newObject": "New Object",
+        "objectColor": "Object color",
+        "objectNameFromImagePlaceholder": "Image object name, e.g. Image1 / protagonist",
+        "newObjectNamePlaceholder": "New object name",
+        "addToStudio": "Add to Studio",
+        "selectHint": "Click Image1/Image2 on the left, the object list on the right, or enable select mode in Director Studio and click an object. After selecting, edit its name, color, coordinates, relationship, and action on the right."
+      },
+      "category": {
+        "person": "Person",
+        "object": "Thing",
+        "scene": "Scene"
+      },
+      "noAssetsHint": "The current canvas has no image assets to link. Upload or generate images first, then Director Studio markers can reference identities, objects, or scenes.",
+      "basePromptPlaceholder": "Overall shot, style, and mood description (packaged with Director Studio position data; supports @Image1 / @character)",
+      "showFinalPrompt": "View final prompt",
+      "importedStatus": "Imported references: {{count}} · link them in marker details",
+      "textOnlyHint": "Tip: import images on the left first, or generate using only text and spatial markers",
+      "copied": "Copied",
+      "copyPrompt": "Copy prompt",
+      "assetPickerTitle": "Choose Director Studio reference images",
+      "assetPickerSubtitle": "Click images to multi-select, then add them to the left-side Studio image column"
+    },
+    "snapshotSourceName": "Director Studio Snapshot",
+    "referenceSourceName": "Reference · {{label}}",
+    "generationNodeName": "Director Studio Generation",
+    "nodeCard": {
+      "summary": "{{environment}} · {{count}} elements · {{refs}} references",
+      "flatEnvironment": "3D Ground",
+      "panoramaEnvironment": "Panorama Environment",
+      "emptyPreview": "Open fullscreen Director Studio",
+      "snapshotAlt": "Latest Director Studio screenshot",
+      "enter": "Enter Studio"
+    },
+    "resolutionNote": "This version exports by the selected frame; 1440p and 4K scale from the current viewport.",
+    "prompt": {
+      "title": "Prompt Draft",
+      "placeholder": "Describe the overall shot, style, mood, and direction. It will be combined with spatial layout, element actions, and linked references.",
+      "hint": "When added to the canvas, this remains editable in the AI image node."
+    },
+    "viewSettings": {
+      "title": "View Settings",
+      "wheelZoomEnabled": "Wheel Focal Zoom",
+      "wheelZoomEnabledHint": "When off, mouse wheel input will not zoom the Director Studio lens.",
+      "reverseWheelZoom": "Reverse Wheel View",
+      "reverseWheelZoomHint": "When on, wheel zoom direction is inverted.",
+      "showAdvancedPedestrianTags": "Advanced Pedestrian IDs",
+      "showAdvancedPedestrianTagsHint": "Show pedestrian sequence numbers and short IDs in 3D labels."
+    },
+    "scene": {
+      "positionHint": "Click the ground to move the selected object there (click Cancel to exit)",
+      "moveHint": "WASD/arrow keys = move · QE = vertical · left drag = orbit · right/Shift drag = pan · wheel = zoom",
+      "orbitHint": "Left drag = orbit · right/Shift drag = pan · wheel = zoom · click a 3D object = select",
+      "reset": "Reset",
+      "resetView": "Reset view",
+      "fitAll": "Fit All",
+      "fitAllTitle": "Frame all objects",
+      "moveMode": "Move Mode",
+      "enterMoveMode": "Enter move mode (WASD pans the view)",
+      "exitMoveMode": "Exit move mode (WASD disabled)",
+      "moveXyCancel": "Move XY · Cancel",
+      "exitMoveXy": "Exit Move XY mode",
+      "fullscreen": "Expand fullscreen (Esc exits)",
+      "exitFullscreen": "Exit fullscreen (Esc)",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "sceneLabel": "3D Director Studio",
+      "panoramaGround": "Panorama Backdrop",
+      "flatGround": "Flat Ground",
+      "referenceIndex": "Ref {{index}}"
+    },
+    "uploadPanorama": "Upload Panorama Image",
+    "importing": "Importing...",
+    "importFailed": "Panorama import failed. Please try again.",
+    "importStages": {
+      "checking": "Checking ratio...",
+      "generating": "Starting image-to-panorama...",
+      "polling": "Waiting for panorama generation...",
+      "normalizing": "Compositing panorama texture..."
+    },
+    "importErrors": {
+      "noModel": "No available provider/model is selected. Add a provider in Settings or log in to Dreamina first.",
+      "missingBuiltinApiKey": "\"{{provider}}\" is missing an API key. Configure it in Settings first.",
+      "missingCustomApiKey": "Custom provider \"{{provider}}\" is missing an API key.",
+      "timeout": "Panorama generation waited over 10 minutes. Please retry later.",
+      "submitFailed": "Failed to submit the panorama generation task.",
+      "generationFailed": "Panorama generation failed.",
+      "fetchResultFailed": "Failed to fetch the panorama result.",
+      "missingSource": "Choose or upload a usable panorama image."
+    },
+    "importFromAssets": "Choose a generated panorama",
+    "panoramaImportHint": "Only canvas panorama nodes or panorama results are shown here. Use upload for a local panorama image.",
+    "noImportAssets": "No generated panorama is available on the canvas yet. You can upload a panorama image directly.",
+    "panoramaAssetFallbackName": "Panorama {{count}}",
+    "linkedImage": {
+      "title": "Linked Image",
+      "choose": "Choose Linked Image",
+      "change": "Change Linked Image",
+      "clear": "Clear Link",
+      "empty": "No linked image yet",
+      "associated": "Linked as identity/material reference",
+      "pickerTitle": "Choose Element Linked Image",
+      "pickerSubtitle": "Choose a canvas asset or reference image for \"{{name}}\"",
+      "search": "Search image name",
+      "noAssets": "No selectable image assets",
+      "uploadAndLink": "Upload and Link Image",
+      "uploading": "Uploading...",
+      "uploadFailed": "Failed to upload the linked image.",
+      "uploadedFallbackName": "Uploaded Image"
+    },
+    "inspector": {
+      "title": "Properties",
+      "noSelection": "No element selected",
+      "empty": "Select an element to edit its name, linked image, position, rotation, scale, and action.",
+      "basic": "Basic",
+      "color": "Color",
+      "name": "Name",
+      "showLabel": "Show Name",
+      "hideLabel": "Hide Name",
+      "relation": "Related Description",
+      "relationPlaceholder": "Describe its relationship to other elements, the shot, or reference images",
+      "note": "Element Note",
+      "notePlaceholder": "Add visual details, material notes, or continuity requirements",
+      "position": "Position XYZ",
+      "rotation": "Rotation XYZ",
+      "scale": "Scale XYZ",
+      "action": "Action",
+      "actionPlaceholder": "Enter a custom action or pose description",
+      "saveActionPreset": "Save Preset",
+      "editCustomActionPose": "Edit Custom Action Pose",
+      "customActionDefaultName": "Custom Action",
+      "deleteActionPreset": "Delete action preset \"{{name}}\"",
+      "confirmDeleteActionPreset": "Delete action preset \"{{name}}\"?",
+      "body": "Body Parameters",
+      "bodyStyle": "Body Style",
+      "showControls": "Show Control Blocks",
+      "bodyCore": "Body Core",
+      "bodyArms": "Arms",
+      "bodyLegs": "Legs",
+      "bodyHeight": "Height",
+      "torsoWidth": "Torso Width",
+      "headScale": "Head Scale",
+      "torsoLean": "Torso Lean",
+      "armLength": "Arm Length",
+      "armThickness": "Arm Thickness",
+      "armSpread": "Arm Spread",
+      "legLength": "Leg Length",
+      "legThickness": "Leg Thickness",
+      "legSpread": "Leg Spread"
+    },
+    "actionPresets": {
+      "stand": "Stand",
+      "walk": "Walk",
+      "talk": "Talk",
+      "point": "Point",
+      "halfSquat": "Half Squat",
+      "sit": "Sit",
+      "lie": "Lie Down"
+    },
+    "actionValues": {
+      "stand": "Stand",
+      "walk": "Walk",
+      "talk": "Talk",
+      "point": "Point",
+      "halfSquat": "Half Squat",
+      "sit": "Sit",
+      "lie": "Lie Down"
+    },
+    "bodyStyles": {
+      "preset": "Preset",
+      "slim": "Slim",
+      "strong": "Strong",
+      "heavy": "Heavy",
+      "childlike": "Child"
+    },
+    "modelLibrary": {
+      "title": "Choose Model",
+      "uploadModel": "Upload Model",
+      "uploadDeferred": "My-model uploads are reserved for a later version",
+      "myModelsEmpty": "No custom models yet",
+      "myModelsHint": "Model upload is reserved; this slice uses built-in procedural placeholders.",
+      "categories": {
+        "basic": "Basic Models",
+        "people": "Base Characters",
+        "props": "Daily Props",
+        "scenes": "Daily Sets",
+        "vehicles": "Common Transport",
+        "mine": "My Models"
+      },
+      "models": {
+        "basic-female": { "name": "Female", "labelBase": "Woman" },
+        "basic-male": { "name": "Male", "labelBase": "Man" },
+        "basic-terrain": { "name": "Terrain", "labelBase": "Terrain" },
+        "basic-pipe": { "name": "Pipe", "labelBase": "Pipe" },
+        "basic-cube": { "name": "Cube", "labelBase": "Cube" },
+        "basic-sphere": { "name": "Sphere", "labelBase": "Sphere" },
+        "basic-ramp": { "name": "Ramp", "labelBase": "Ramp" },
+        "basic-torus": { "name": "Torus", "labelBase": "Torus" },
+        "basic-cylinder": { "name": "Cylinder", "labelBase": "Cylinder" },
+        "basic-cone": { "name": "Cone", "labelBase": "Cone" },
+        "basic-plane": { "name": "Plane", "labelBase": "Plane" },
+        "basic-disc": { "name": "Disc", "labelBase": "Disc" },
+        "people-adult-male-average": { "name": "Adult Male", "labelBase": "Adult Male" },
+        "people-adult-female-average": { "name": "Adult Female", "labelBase": "Adult Female" },
+        "people-adult-male-slim": { "name": "Slim Adult Male", "labelBase": "Slim Adult Male" },
+        "people-adult-female-slim": { "name": "Slim Adult Female", "labelBase": "Slim Adult Female" },
+        "people-adult-male-strong": { "name": "Strong Adult Male", "labelBase": "Strong Adult Male" },
+        "people-adult-female-strong": { "name": "Strong Adult Female", "labelBase": "Strong Adult Female" },
+        "people-adult-male-heavy": { "name": "Heavy Adult Male", "labelBase": "Heavy Adult Male" },
+        "people-adult-female-heavy": { "name": "Heavy Adult Female", "labelBase": "Heavy Adult Female" },
+        "people-elder-male": { "name": "Elder Male", "labelBase": "Elder Male" },
+        "people-elder-female": { "name": "Elder Female", "labelBase": "Elder Female" },
+        "people-child-boy": { "name": "Child Boy", "labelBase": "Child Boy" },
+        "people-child-girl": { "name": "Child Girl", "labelBase": "Child Girl" },
+        "people-teen-male": { "name": "Teen Male", "labelBase": "Teen Male" },
+        "people-teen-female": { "name": "Teen Female", "labelBase": "Teen Female" },
+        "props-chair": { "name": "Chair", "labelBase": "Chair" },
+        "props-office-chair": { "name": "Office Chair", "labelBase": "Office Chair" },
+        "props-stool": { "name": "Stool", "labelBase": "Stool" },
+        "props-table": { "name": "Table", "labelBase": "Table" },
+        "props-desk": { "name": "Desk", "labelBase": "Desk" },
+        "props-sofa": { "name": "Sofa", "labelBase": "Sofa" },
+        "props-bed": { "name": "Bed", "labelBase": "Bed" },
+        "props-cabinet": { "name": "Cabinet", "labelBase": "Cabinet" },
+        "props-bookshelf": { "name": "Bookshelf", "labelBase": "Bookshelf" },
+        "props-door": { "name": "Door", "labelBase": "Door" },
+        "props-window": { "name": "Window", "labelBase": "Window" },
+        "props-floor-lamp": { "name": "Floor Lamp", "labelBase": "Floor Lamp" },
+        "props-table-lamp": { "name": "Table Lamp", "labelBase": "Table Lamp" },
+        "props-plant": { "name": "Plant", "labelBase": "Plant" },
+        "props-laptop": { "name": "Laptop", "labelBase": "Laptop" },
+        "props-phone": { "name": "Phone", "labelBase": "Phone" },
+        "props-cup": { "name": "Cup", "labelBase": "Cup" },
+        "props-suitcase": { "name": "Suitcase", "labelBase": "Suitcase" },
+        "props-monitor-tv": { "name": "TV / Monitor", "labelBase": "TV / Monitor" },
+        "scenes-living-room": { "name": "Living Room", "labelBase": "Living Room" },
+        "scenes-kitchen": { "name": "Kitchen", "labelBase": "Kitchen" },
+        "scenes-bedroom": { "name": "Bedroom", "labelBase": "Bedroom" },
+        "scenes-office": { "name": "Office", "labelBase": "Office" },
+        "scenes-classroom": { "name": "Classroom", "labelBase": "Classroom" },
+        "scenes-hospital-room": { "name": "Hospital Room", "labelBase": "Hospital Room" },
+        "scenes-shop-cafe": { "name": "Shop / Cafe", "labelBase": "Shop / Cafe" },
+        "scenes-restaurant": { "name": "Restaurant", "labelBase": "Restaurant" },
+        "scenes-street-corner": { "name": "Street Corner", "labelBase": "Street Corner" },
+        "scenes-parking-lot": { "name": "Parking Lot", "labelBase": "Parking Lot" },
+        "scenes-park-path": { "name": "Park Path", "labelBase": "Park Path" },
+        "scenes-warehouse": { "name": "Warehouse", "labelBase": "Warehouse" },
+        "scenes-house-exterior": { "name": "House Exterior", "labelBase": "House Exterior" },
+        "scenes-apartment-exterior": { "name": "Apartment Exterior", "labelBase": "Apartment Exterior" },
+        "vehicles-sedan": { "name": "Sedan", "labelBase": "Sedan" },
+        "vehicles-suv": { "name": "SUV", "labelBase": "SUV" },
+        "vehicles-taxi": { "name": "Taxi", "labelBase": "Taxi" },
+        "vehicles-van": { "name": "Van", "labelBase": "Van" },
+        "vehicles-bus": { "name": "Bus", "labelBase": "Bus" },
+        "vehicles-truck": { "name": "Truck", "labelBase": "Truck" },
+        "vehicles-motorcycle": { "name": "Motorcycle", "labelBase": "Motorcycle" },
+        "vehicles-bicycle": { "name": "Bicycle", "labelBase": "Bicycle" },
+        "vehicles-e-scooter": { "name": "E-Bike / Scooter", "labelBase": "E-Bike / Scooter" },
+        "vehicles-ambulance": { "name": "Ambulance", "labelBase": "Ambulance" },
+        "vehicles-police-car": { "name": "Police Car", "labelBase": "Police Car" },
+        "vehicles-subway-car": { "name": "Subway / Train Car", "labelBase": "Subway / Train Car" }
+      }
+    },
+    "pedestrians": {
+      "title": "Add Pedestrians",
+      "directHint": "Add one procedural pedestrian at the default position and select it.",
+      "count": "Count",
+      "columns": "Columns",
+      "xSpacing": "Horizontal Spacing",
+      "zSpacing": "Depth Spacing",
+      "radius": "Distribution Radius",
+      "addOne": "Add Pedestrian",
+      "addBatch": "Add Batch",
+      "modes": {
+        "direct": "Direct",
+        "array": "Array",
+        "random": "Random"
+      }
+    },
+    "camera": {
+      "fov": "FOV",
+      "lensDistance": "Lens Distance"
+    },
+    "cameraPresets": {
+      "standard": "Standard",
+      "wide": "Wide",
+      "ultraWide": "Ultra Wide",
+      "portrait": "Portrait",
+      "telephoto": "Telephoto",
+      "superTelephoto": "Super Telephoto",
+      "fisheye": "Fisheye"
+    },
+    "lighting": {
+      "enabled": "Lighting",
+      "mainIntensity": "Key Intensity",
+      "mainYaw": "Key Yaw",
+      "mainPitch": "Key Pitch",
+      "mainColor": "Key Color",
+      "ambientIntensity": "Ambient Intensity",
+      "ambientColor": "Ambient Color"
+    },
+    "grid": {
+      "visible": "Show Grid",
+      "height": "Grid Height"
+    },
+    "aspectFrames": {
+      "panorama": "Panorama",
+      "square": "1:1",
+      "fourThree": "4:3",
+      "threeFour": "3:4",
+      "sixteenNine": "16:9",
+      "nineSixteen": "9:16",
+      "threeTwo": "3:2",
+      "twoThree": "2:3",
+      "twentyOneNine": "21:9"
+    },
+    "resolutions": {
+      "p1080": "1080p",
+      "p1440": "1440p",
+      "k4": "4K"
+    },
+    "shortcuts": {
+      "title": "Shortcuts",
+      "recording": "Press New Key",
+      "sections": {
+        "move": "Move",
+        "view": "View",
+        "camera": "Camera",
+        "transform": "Transform Tools",
+        "workflow": "Project & Panels"
+      },
+      "rows": {
+        "moveWasd": "Move the camera target",
+        "moveVertical": "Raise/lower the camera target",
+        "moveFast": "Hold to move faster",
+        "viewOrbit": "Orbit the view",
+        "viewPan": "Pan the view",
+        "viewZoom": "Zoom lens distance",
+        "viewFocusFit": "Focus selected element / fit all",
+        "focus": "Focus-follow selected element",
+        "fit": "Fit all elements",
+        "viewReset": "Reset the view",
+        "reset": "Reset the view",
+        "cameraWheelZoom": "Zoom focal distance according to view settings",
+        "cameraWheelToggle": "Enable or disable wheel focal zoom",
+        "cameraReverseWheel": "Invert wheel zoom direction",
+        "transformModes": "Move / Rotate / Scale",
+        "transformMove": "Transform Tool: Move",
+        "transformRotate": "Transform Tool: Rotate",
+        "transformScale": "Transform Tool: Scale",
+        "escape": "Cancel transform, close dialogs, or exit Director Studio",
+        "delete": "Delete the selected element",
+        "copyPaste": "Copy / paste the selected element",
+        "copy": "Copy the selected element",
+        "paste": "Paste the selected element",
+        "undo": "Undo the last Director Studio or canvas change",
+        "redo": "Redo the reverted change",
+        "save": "Save the current project",
+        "screenshot": "Capture and open preview",
+        "model": "Open the model library",
+        "panels": "Lighting / Grid / Prompt / Shortcuts",
+        "lighting": "Open the lighting panel",
+        "grid": "Open the grid panel",
+        "prompt": "Open the prompt panel",
+        "shortcuts": "Open the shortcuts panel",
+        "advancedPedestrianTags": "Show or hide pedestrian sequence numbers and short IDs"
+      }
+    },
+    "category": {
+      "person": "Person",
+      "object": "Object",
+      "scene": "Scene"
+    },
+    "toolbar": {
+      "addModel": "Add Model",
+      "addPedestrian": "Add Pedestrian",
+      "defaultPedestrian": "Default Pedestrian",
+      "delete": "Delete",
+      "focus": "Focus",
+      "prompt": "Prompt",
+      "transform": "Transform",
+      "params": "Parameters",
+      "cameraPreset": "Lens Presets",
+      "lighting": "Lighting",
+      "reset": "Reset",
+      "grid": "Grid",
+      "frame": "Frame",
+      "resolution": "Resolution",
+      "screenshot": "Screenshot",
+      "shortcuts": "Shortcuts"
+    }
+  },
+  "node": {
+    "menu": {
+      "uploadImage": "Upload Image",
+      "aiImageGeneration": "AI Image",
+      "storyboard": "Storyboard Node",
+      "storyboardGen": "Storyboard Generation",
+      "textAnnotation": "Text Annotation",
+      "panorama": "Panorama",
+      "blueprint": "Director Studio"
+    },
+    "imageNode": {
+      "title": "Image Node",
+      "prompt": "Prompt",
+      "model": "Model",
+      "size": "Size",
+      "aspectRatio": "Aspect Ratio",
+      "referenceImages": "Reference Images",
+      "noImage": "No Image",
+      "dragImage": "Drag or click to upload image",
+      "resultAlt": "Result image",
+      "generatedAlt": "Generated image",
+      "waitingResult": "Waiting for output image",
+      "waitingResultDelayed": "Already waited {{minutes}} minutes with no result yet. Still waiting...",
+      "selectToEdit": "Select this node and enter a prompt below to generate or edit image",
+      "generationFailed": "Generation failed",
+      "fetchResultFailed": "Failed to fetch generation result. Please retry."
+    },
+    "imageEdit": {
+      "promptRequired": "Please enter a prompt",
+      "promptPresetMissing": "The selected prompt preset no longer exists. Choose another preset.",
+      "referenceRequiredForPromptSource": "This function or preset needs at least one connected reference image.",
+      "userSupplementLabel": "User supplement: ",
+      "apiKeyRequired": "Please set API key in Settings",
+      "resultTitle": "Result Image",
+      "promptPlaceholder": "Describe anything you want to generate or edit",
+      "generateCount": "Count",
+      "customCount": "Custom"
+    },
+    "panoramaViewer": {
+      "expand": "Enlarge panorama",
+      "screenshot": "Save current view",
+      "quad": "Create four-view scene sheet (front/right/back/left)",
+      "currentViewNodeTitle": "Panorama Current View",
+      "quadNodeTitle": "Panorama Four-View Scene Sheet",
+      "reset": "Reset view",
+      "loading": "Compositing panorama...",
+      "loadFailed": "Failed to load panorama",
+      "loadFailedDetail": "Failed to load the panorama. Generate again or import another image.",
+      "captureFailed": "Failed to capture the current panorama view. Wait for the view to finish loading, then retry.",
+      "deleteNode": "Close panorama (delete node)",
+      "closeExpanded": "Close enlarged view",
+      "expandedTitle": "Panorama View",
+      "expandedHint": "Double-click the node or use the enlarge button to inspect details with drag, wheel, and arrow-key controls.",
+      "spherical": "720° Sphere",
+      "cylindrical": "360° Wrap",
+      "controlsHint": "Drag / arrow keys"
+    },
+    "upload": {
+      "uploadedAlt": "Uploaded image",
+      "hint": "Click or drag to upload image"
+    },
+    "storyboardNode": {
+      "title": "Storyboard Node",
+      "frames": "Frames",
+      "rows": "Rows",
+      "cols": "Columns",
+      "frameIndex": "Frame {{index}}"
+    },
+    "storyboardGen": {
+      "rowsShort": "R",
+      "colsShort": "C",
+      "frameCount": "{{count}} frames",
+      "ratioModeOverall": "Overall",
+      "ratioModeCell": "Cell",
+      "cellAspectRatio": "Cell ratio",
+      "overallAspectRatio": "Overall ratio",
+      "requestAspectRatio": "Request ratio",
+      "framePlaceholder": "Frame {{index}} description",
+      "gridPreviewTitle": "Grid Preview"
+    },
+    "textAnnotation": {
+      "placeholder": "Write Markdown text. It will render when unselected.",
+      "empty": "Empty note"
+    }
+  },
+  "viewer": {
+    "imageAlt": "Image",
+    "prev": "Previous",
+    "next": "Next",
+    "reset": "Reset View"
+  },
+  "split": {
+    "title": "Split Storyboard",
+    "rows": "Rows",
+    "cols": "Columns",
+    "preview": "Preview",
+    "split": "Split"
+  },
+  "ai": {
+    "provider": "AI Provider",
+    "model": "Model",
+    "prompt": "Prompt",
+    "generating": "Generating...",
+    "success": "Generated successfully",
+    "error": "Generation failed"
+  },
+  "mainHome": {
+    "canvasProjects": "Canvas Projects",
+    "promptLibrary": "Prompt Library",
+    "canvasProjectsHint": "Manage local canvas projects",
+    "promptLibraryHint": "Browse community prompts, save favorites, and apply them to canvases"
+  },
+  "project": {
+    "title": "Canvas Projects",
+    "newProject": "New Project",
+    "newProjectTitle": "New Project",
+    "open": "Open Project",
+    "save": "Save Project",
+    "name": "Project Name",
+    "namePlaceholder": "Enter project name",
+    "rename": "Rename",
+    "renameTitle": "Rename Project",
+    "delete": "Delete Project",
+    "created": "Created",
+    "modified": "Modified",
+    "updatedAt": "Updated",
+    "sortBy": "Sort by",
+    "sortDirection": "Sort order",
+    "sortByName": "Name",
+    "sortByCreatedAt": "Creation date",
+    "sortByUpdatedAt": "Modified date",
+    "sortAsc": "Ascending",
+    "sortDesc": "Descending",
+    "nodes": "Nodes",
+    "noProjects": "No Projects",
+    "empty": "No Projects",
+    "emptyHint": "Click the button above to create a new project"
+  },
+  "promptLibrary": {
+    "title": "Prompt Center",
+    "description": "Sync community open-source prompts with local curated fallbacks, then search by title, tags, category, and source. Open any prompt to favorite it or apply it to a canvas.",
+    "builtInBadge": "Local fallback",
+    "liveBadge": "Community live sync",
+    "resultCount": "Showing {{count}} / {{total}}, {{remote}} community prompts",
+    "searchPlaceholder": "Search titles or prompt text",
+    "allPrompts": "All Prompts",
+    "myFavorites": "My Favorites {{count}}",
+    "favorite": "Favorite",
+    "removeFavorite": "Remove Favorite",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing",
+    "lastUpdated": "Updated at {{time}}",
+    "updating": "Syncing community sources",
+    "partialOffline": "Some community sources are unavailable",
+    "clearFilters": "Clear filters",
+    "categoryFilter": "Category",
+    "sourceFilter": "Source",
+    "tagFilter": "Tags",
+    "emptyTitle": "No matching prompts",
+    "emptyHint": "Try fewer filters or a different search term.",
+    "emptyFavoriteTitle": "No favorite prompts yet",
+    "emptyFavoriteHint": "Open a prompt detail or click the heart on a card to add it to My Favorites.",
+    "loadMore": "Load more {{visible}} / {{total}}",
+    "endOfList": "Showing all {{total}}",
+    "applyToCanvas": "Apply to Canvas",
+    "detail": {
+      "fullPrompt": "Full prompt",
+      "preview": "Source preview",
+      "updatedAt": "Updated: {{date}}"
+    },
+    "applyDialog": {
+      "title": "Apply to Canvas",
+      "prompt": "Current prompt",
+      "existingProject": "Existing canvas",
+      "newProject": "New canvas",
+      "noProjects": "No canvas projects are available. Create a new project instead.",
+      "newProjectName": "New project name",
+      "newProjectPlaceholder": "Enter a canvas project name",
+      "nodeCount": "{{count}} nodes",
+      "confirm": "Create AI Node",
+      "applying": "Applying...",
+      "error": "Failed to apply the prompt. Try again."
+    },
+    "categories": {
+      "scene": "Scene",
+      "character": "Character",
+      "camera": "Camera",
+      "product": "Product",
+      "sequence": "Sequence"
+    },
+    "sources": {
+      "cinematic": "Cinematic",
+      "director": "Director Studio",
+      "storyboard": "Storyboard",
+      "commercial": "Commercial"
+    },
+    "tags": {
+      "cinematic": "Cinematic",
+      "character": "Character",
+      "composition": "Composition",
+      "detail": "Detail",
+      "environment": "Environment",
+      "interior": "Interior",
+      "lighting": "Lighting",
+      "motion": "Motion",
+      "night": "Night",
+      "portrait": "Portrait",
+      "product": "Product",
+      "storyboard": "Storyboard",
+      "wide": "Wide"
+    },
+    "entries": {
+      "neonAlley": {
+        "title": "Neon Alley Confrontation",
+        "excerpt": "A rainy narrow-alley standoff with neon reflections, low camera placement, and sharp contrast.",
+        "prompt": "A narrow city alley on a rainy night, two characters facing each other on separate depth planes, wet pavement reflecting cyan and magenta neon. Low wide-angle camera, blurred pipes and wall texture in the foreground, characters rim-lit in the middle ground, faint smoke and city signage in the distance. Emphasize tense cinematic composition, clear spatial depth, realistic materials, rich detail without clutter."
+      },
+      "characterPortrait": {
+        "title": "Character Continuity Portrait",
+        "excerpt": "A reusable character reference with clear clothing materials and recognizable identity traits.",
+        "prompt": "A reusable cinematic half-body character portrait with clear facial features, steady eye direction, layered clothing materials, and distinctive hair, accessories, and silhouette. Soft key light from the front-left, subtle rim light separating the subject from a simple photographic background. Keep the character identity consistent, avoid exaggerated deformation, suitable as a reference for later storyboard and multi-angle generation."
+      },
+      "wideEstablishing": {
+        "title": "Wide Establishing Shot",
+        "excerpt": "A wide opening or transition shot with readable scale, subject placement, and movement paths.",
+        "prompt": "A wide establishing shot for a storyboard opening, showing full scene scale, main building or terrain boundaries, a small human-scale subject placement, and a clear movement path. Camera slightly above eye level, foreground, midground, and background layers are readable, natural light, suitable as a staging and Director Studio layout reference for follow-up shots."
+      },
+      "productHero": {
+        "title": "Product Hero Still",
+        "excerpt": "A centered product still with controlled material detail, edge highlights, and background depth.",
+        "prompt": "A commercial advertising product hero still, one core product placed slightly below center, crisp edge highlights, realistic material detail, low-key geometric platform and soft gradient light in the background. Key light shapes the product form, fill light preserves layered shadows. Clean, professional, suitable for a poster or ecommerce hero image, no extra text or logos."
+      },
+      "actionBeat": {
+        "title": "Action Storyboard Beat",
+        "excerpt": "A key action beat with direction, speed cues, and readable character relationships.",
+        "prompt": "A key action storyboard beat: the character moves rapidly from lower-left toward upper-right, body pose showing a clear force direction, clothing and nearby environment with slight motion drag. Foreground obstacles enhance speed, the character action is readable in the midground, background keeps identifiable spatial cues. Strong compositional direction, action logic that can expand into a sequence, and realistic cinematic lens quality."
+      },
+      "interiorMorning": {
+        "title": "Interior Morning Ambience",
+        "excerpt": "Window light, dust motes, and quiet lived-in details for an emotional interior scene.",
+        "prompt": "A quiet morning interior scene, soft daylight entering diagonally through the window, faint dust motes in the air, simple realistic furniture, subtle wall, fabric, and wood textures. Restrained and lived-in, suitable for a character alone or a dialogue setup before action begins. Leave clear space for character movement and avoid excessive decoration."
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "providers": "API Key",
+    "providersDesc": "Configure AI provider API keys",
+    "providerGuideText": "Different providers vary in model capability, queue speed, and stability. Switch providers based on your task, and follow each provider's recommended parameters.",
+    "customProviderHelp": {
+      "title": "Not sure how to configure it?",
+      "step1": "Click \"Copy tutorial prompt\" on the left, then paste it into the AI assistant you usually use.",
+      "step2": "Send the provider API docs or curl example to the assistant and ask it to output JSON in the required format.",
+      "step3": "Paste the returned JSON into \"One-click JSON import\", import it, let the form fill itself, then add the API key and save.",
+      "step4": "If the API needs signing, multipart/form-data, x-www-form-urlencoded, or task polling, ask the assistant to call that out in note and prefer direct form mode, a proxy, or a later dedicated adapter."
+    },
+    "doNotShowAgain": "Do not show again",
+    "appearance": "Appearance",
+    "appearanceDesc": "Customize app appearance",
+    "about": "About",
+    "aboutDesc": "Open-source project information and update settings",
+    "general": "General",
+    "generalDesc": "Canvas interaction, storyboard generation, and download paths",
+    "promptManagement": {
+      "title": "Prompt Management",
+      "desc": "Manage default language and custom overrides for built-in feature prompts.",
+      "globalLanguage": "Global Default Language",
+      "templateLanguage": "Current Language",
+      "inheritGlobal": "Inherit Global",
+      "languageInherit": "Inherit global ({{language}})",
+      "languages": {
+        "zh": "Chinese",
+        "en": "English"
+      },
+      "customized": "Customized",
+      "editPrompt": "Edit Prompt",
+      "editorTitle": "Edit Prompt · {{name}}",
+      "restoreDefault": "Restore Default",
+      "saveAndClose": "Save and Close",
+      "dynamicFields": "Dynamic Fields / Placeholders",
+      "noPlaceholders": "This prompt has no replaceable placeholders, but generation may still attach references or user input.",
+      "editableTemplate": "Editable Template",
+      "defaultTemplatePreview": "Default Template for Current Language",
+      "scopes": {
+        "canvasPanel": "Canvas Panels",
+        "multiFunction": "Multi-function",
+        "camera": "Camera",
+        "panorama": "Panorama",
+        "directorStudio": "Director Studio",
+        "storyboard": "Storyboard",
+        "tool": "Tool Processor"
+      },
+      "dynamicNotes": {
+        "none": "No dynamic fields.",
+        "multiAngle": "Sliders, camera direction, shot size, consistency constraints, and user extra text are injected during generation.",
+        "lighting": "Light direction, brightness, rim light, color, smart description, and consistency constraints are injected during generation.",
+        "referenceImage": "Generation sends the current node or tool reference images separately; the template does not need image URLs.",
+        "cameraControl": "Camera body, lens, focal length, and aperture values are replaced from the panel selection.",
+        "panorama": "Projection type, common panorama constraints, references, and user input are composed by the panorama flow.",
+        "directorStudioLayout": "Mode instructions, references, placed elements, scene references, and the user's base prompt are generated from Director Studio state.",
+        "directorStudioScreenshotHandoff": "The screenshot is the first connected image; later connected images act as identity, material, or prop references.",
+        "directorStudioPanoramaImport": "The imported image name is dynamic context; this template describes the Director Studio environment-sphere / wraparound-backdrop use, while the panorama flow still composes 2:1/4:1, no-text, no-border, and seamless geometry constraints.",
+        "storyboardGrid": "Rows, columns, frame count, style consistency, no-text directive, and per-frame descriptions are generated by the storyboard node.",
+        "inpaint": "Target content comes from the tool panel, and the mask image is sent as a request parameter.",
+        "matting": "Target subject comes from the tool panel; without a mask, the main foreground subject is used."
+      }
+    },
+    "promptPresets": {
+      "title": "Prompt Presets",
+      "desc": "Save reusable custom prompt bodies for later canvas-tool integration.",
+      "addTitle": "Add Preset",
+      "editTitle": "Edit Preset",
+      "formHint": "Presets store only a name and prompt body, with no language split.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Example: Cinematic product poster",
+      "promptLabel": "Prompt Description / Body",
+      "promptPlaceholder": "Enter a full prompt or a reusable prompt template",
+      "addButton": "Add Preset",
+      "saveEdit": "Save Changes",
+      "nameRequired": "Enter a preset name.",
+      "promptRequired": "Enter the prompt body.",
+      "listTitle": "Saved Presets",
+      "count": "{{count}}",
+      "updatedAt": "Updated {{time}}",
+      "empty": "No prompt presets yet."
+    },
+    "promptTemplates": {
+      "multiAngle": {
+        "title": "Multi-angle",
+        "desc": "Prompt skeleton used when generating alternate camera angles from a selected image."
+      },
+      "lighting": {
+        "title": "Lighting",
+        "desc": "Prompt skeleton used when generating lighting adjustments from a selected image."
+      },
+      "cameraControlVirtualCamera": {
+        "title": "Camera Control",
+        "desc": "Virtual camera, lens, focal length, and aperture text appended to an AI image node."
+      },
+      "panoramaSpherical": {
+        "title": "Spherical Panorama Core",
+        "desc": "Fixed geometry constraints for 2:1 equirectangular panorama generation."
+      },
+      "panoramaCylindrical": {
+        "title": "Cylindrical Panorama Core",
+        "desc": "Fixed geometry constraints for horizontal 360-degree panorama generation."
+      },
+      "panoramaImageFallback": {
+        "title": "Image-to-panorama Wrapper",
+        "desc": "Composes reference-image, projection, and user prompt text when converting an image to a panorama."
+      },
+      "panoramaTextFallback": {
+        "title": "Text-to-panorama Wrapper",
+        "desc": "Composes projection and user prompt text when generating a panorama from text and references."
+      },
+      "directorStudioLayout": {
+        "title": "Director Studio Layout",
+        "desc": "Organizes Director Studio spatial layout, elements, actions, relations, and references into a generation prompt."
+      },
+      "directorStudioScreenshotHandoff": {
+        "title": "Director Studio Screenshot Handoff",
+        "desc": "Explains the roles of the screenshot and linked references when adding a screenshot to canvas."
+      },
+      "directorStudioPanoramaImport": {
+        "title": "Director Studio Panorama Import",
+        "desc": "Task description appended when converting a selected image into an environment sphere or wraparound background for a 3D Director Studio scene."
+      },
+      "storyboardGridGeneration": {
+        "title": "Storyboard Grid Generation",
+        "desc": "Storyboard generation node template for rows, columns, frame descriptions, and toggle directives."
+      },
+      "tool_hdSketch": {
+        "title": "Tool · HD Sketch",
+        "desc": "First HD-tool pass that converts the source image into a structural line sketch."
+      },
+      "tool_hdComposite": {
+        "title": "Tool · HD Refinement",
+        "desc": "Second HD-tool pass that combines the source and sketch for detail refinement."
+      },
+      "tool_outpaint_balanced": {
+        "title": "Tool · Outpaint All Sides",
+        "desc": "Prompt used when extending image boundaries in all directions."
+      },
+      "tool_outpaint_horizontal": {
+        "title": "Tool · Horizontal Outpaint",
+        "desc": "Prompt used when extending image boundaries left and right."
+      },
+      "tool_outpaint_vertical": {
+        "title": "Tool · Vertical Outpaint",
+        "desc": "Prompt used when extending image boundaries up and down."
+      },
+      "tool_inpaint": {
+        "title": "Tool · Inpaint",
+        "desc": "Redraws only the masked region while preserving unmasked areas."
+      },
+      "tool_erase": {
+        "title": "Tool · Erase",
+        "desc": "Prompt used to remove masked objects and reconstruct the background."
+      },
+      "tool_matting": {
+        "title": "Tool · Matting",
+        "desc": "Prompt used to extract the foreground subject and remove the background."
+      }
+    },
+    "apiKey": "API Key",
+    "model": "Model",
+    "enterApiKey": "Enter API Key",
+    "nanoBananaProModel": "Nano Banana Pro Model",
+    "nanoBananaProModelDesc": "Switch the Nano Banana Pro endpoint for this provider. If one endpoint fails, try another one. See the <modelListLink>model list</modelListLink> for details.",
+    "addProvider": "Add Provider",
+    "providerPpioName": "PPIO",
+    "comingSoon": "Coming soon...",
+    "radiusPreset": "Corner Radius",
+    "radiusPresetDesc": "Control global corner style for panels, inputs, and nodes.",
+    "radiusCompact": "Compact",
+    "radiusDefault": "Default",
+    "radiusLarge": "Rounded",
+    "themeTone": "Theme Tone",
+    "themeToneDesc": "Choose neutral, warm, or cool tint for both light and dark themes.",
+    "toneNeutral": "Neutral",
+    "toneWarm": "Warm",
+    "toneCool": "Cool",
+    "edgeRoutingMode": "Edge Routing",
+    "edgeRoutingModeDesc": "Switch edge path style between nodes, including orthogonal routing with automatic node avoidance.",
+    "edgeRoutingSpline": "Spline",
+    "edgeRoutingOrthogonal": "Orthogonal",
+    "edgeRoutingSmartOrthogonal": "Smart Avoidance (Orthogonal)",
+    "accentColor": "Accent Color",
+    "accentColorDesc": "Used by buttons, selected borders, and interaction highlights.",
+    "resetAccentColor": "Reset",
+    "downloadPresetPaths": "Download Preset Paths",
+    "downloadPresetPathsDesc": "Used by node toolbar download menu for quick-save directories (up to 8).",
+    "storyboardGenKeepStyleConsistent": "Keep storyboard style aligned with references",
+    "storyboardGenKeepStyleConsistentDesc": "When enabled, storyboard generation prompt appends \"图片风格与参考图保持一致\".",
+    "storyboardGenDisableTextInImage": "Disallow descriptive text in storyboard image",
+    "storyboardGenDisableTextInImageDesc": "When enabled, storyboard generation prompt appends \"禁止添加描述文本\".",
+    "ignoreAtTagWhenCopyingAndGenerating": "Ignore @ tags when copying/saving text",
+    "ignoreAtTagWhenCopyingAndGeneratingDesc": "When enabled, copied text and embedded storyboard metadata remove tags like \"@图1\"; generation requests only remove \"@\" and keep \"图1\".",
+    "useLegacyPanoramaControlDirection": "Use legacy panorama drag direction",
+    "useLegacyPanoramaControlDirectionDesc": "Off uses the new reversed drag direction. Turn on to restore the old panorama viewer drag and arrow-key direction.",
+    "panoramaControlSensitivity": "Panorama control sensitivity",
+    "panoramaControlSensitivityDesc": "Adjust drag rotation, arrow-key, and movement speed in the panorama viewer and Panorama Director Studio.",
+    "panoramaControlSensitivityLow": "Low",
+    "panoramaControlSensitivityMedium": "Medium",
+    "panoramaControlSensitivityHigh": "High",
+    "useUploadFilenameAsNodeTitle": "Use uploaded filename as node title",
+    "useUploadFilenameAsNodeTitleDesc": "When enabled, newly uploaded images use the file name as the node title by default (still editable via double-click).",
+    "downloadPathPlaceholder": "Input folder path, e.g. /Users/name/Pictures/Storyboard or D:\\\\Images\\\\Storyboard",
+    "addPath": "Add Path",
+    "chooseFolder": "Choose Folder",
+    "noDownloadPresetPaths": "No preset path yet",
+    "providerApiKeyGuidePrefix": "First",
+    "providerRegisterLink": "click here to sign up",
+    "providerApiKeyGuideMiddle": ", then",
+    "getApiKeyLink": "click here to get API key",
+    "missingAnyApiKeyMessage": "You have not configured any providers yet. Please open Settings to configure one.",
+    "openProvidersSettings": "Open Settings",
+    "aboutAppName": "Open Storyboard Canvas",
+    "aboutIntro": "An open-source AI storyboard and Director Studio canvas with panoramas, camera controls, prompt presets, and multi-provider generation.",
+    "aboutVersionLabel": "Version",
+    "aboutVersionUnknown": "Unknown",
+    "aboutAuthorLabel": "Author",
+    "aboutAuthor": "ganbo-gab",
+    "aboutRepositoryLabel": "Repository",
+    "aboutRepositoryUrl": "https://github.com/ganbo-gab/open-storyboard-canvas",
+    "aboutOriginalAuthorLabel": "Original author",
+    "aboutOriginalAuthor": "henjicc / 痕继痕迹",
+    "aboutOriginalProjectLabel": "Original project",
+    "aboutOriginalProjectUrl": "https://github.com/henjicc/Storyboard-Copilot",
+    "aboutOriginalAttributionNote": "This project is based on the original Storyboard-Copilot project and has the original author's authorization to continue development and publish open source, provided the original author name and project link are retained.",
+    "autoCheckUpdateOnLaunch": "Auto check updates on launch",
+    "autoCheckUpdateOnLaunchDesc": "Check ganbo-gab/open-storyboard-canvas GitHub Releases once every time the app starts.",
+    "enableUpdateDialog": "Enable update dialog",
+    "enableUpdateDialogDesc": "Show a custom dialog when a new version is detected.",
+    "enableStoryboardGenGridPreviewShortcut": "Enable storyboard grid preview shortcut",
+    "enableStoryboardGenGridPreviewShortcutDesc": "When enabled, holding Ctrl + Alt + Shift and clicking Generate on storyboard generation creates a grid preview node without sending AI request.",
+    "showStoryboardGenAdvancedRatioControls": "Show advanced storyboard ratio controls",
+    "showStoryboardGenAdvancedRatioControlsDesc": "When enabled, show cell/overall ratio info and the Overall/Cell mode switch. When disabled, storyboard generation uses cell-ratio mode by default.",
+    "storyboardGenAutoInferEmptyFrame": "Auto infer empty frames",
+    "storyboardGenAutoInferEmptyFrameDesc": "When enabled, empty storyboard cells automatically append \"依据之前的内容进行推测\" during generation prompt construction.",
+    "checkUpdateNow": "Check for updates now",
+    "checkingUpdate": "Checking for updates...",
+    "checkUpdateHasUpdate": "New version detected.",
+    "checkUpdateUpToDate": "You are on the latest version.",
+    "checkUpdateFailed": "Update check failed. Please try again later."
+  },
+  "update": {
+    "dialogTitle": "Update Available",
+    "dialogDescription": "A new version is available. Do you want to download it now?",
+    "goToGithubDownload": "GitHub Releases",
+    "versionLine": "Current: {{currentVersion}}, Latest: {{latestVersion}}",
+    "ignoreRule": "Ignore reminder rule",
+    "ignoreTodayVersion": "Do not remind this version today",
+    "ignoreThisVersionForever": "Never remind this version",
+    "ignoreAllForever": "Never remind updates",
+    "applyIgnore": "Apply ignore"
+  },
+  "errorDialog": {
+    "detailsTitle": "Error details",
+    "copyReport": "Copy error report"
+  },
+  "lighting": {
+    "title": "Lighting Control",
+    "globalSettings": "Global Settings",
+    "smartMode": "Smart Mode",
+    "brightness": "Brightness",
+    "color": "Color",
+    "lightPosition": "Main Light Position",
+    "rimLight": "Rim Light",
+    "rimLightDesc": "Add highlight outline on object edges",
+    "stylePresets": "Style Presets",
+    "preview": "Preview",
+    "reset": "Reset",
+    "apply": "Apply",
+    "view": {
+      "perspective": "Perspective",
+      "front": "Front"
+    },
+    "position": {
+      "left": "Left",
+      "right": "Right",
+      "top": "Top",
+      "bottom": "Bottom"
+    },
+    "presets": {
+      "overexposed": "Overexposed Film",
+      "blueBacklight": "Blue Backlight",
+      "rembrandt": "Rembrandt",
+      "cyberpunk": "Cyberpunk",
+      "sunset": "Sunset",
+      "mysterious": "Mysterious",
+      "goldenHour": "Golden Hour",
+      "nolanGrey": "Nolan Grey"
+    }
+  },
+  "multiAngle": {
+    "title": "Multi-angle Control",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical",
+    "shotSize": "Shot Size",
+    "promptEnable": "Prompt",
+    "promptEnableDesc": "Auto-add angle description to prompt",
+    "anglePresets": "Angle Presets",
+    "preview": "Preview",
+    "reset": "Reset",
+    "apply": "Apply",
+    "view": {
+      "perspective": "Perspective",
+      "front": "Front"
+    },
+    "direction": {
+      "left": "Left",
+      "right": "Right",
+      "top": "Top",
+      "bottom": "Bottom"
+    },
+    "presets": {
+      "custom": "Custom",
+      "fishEye": "Fish Eye",
+      "tilted": "Tilted",
+      "overhead": "Overhead",
+      "lowAngle": "Low Angle",
+      "frontOverhead": "Front Overhead",
+      "panorama": "Panorama",
+      "backView": "Back View"
+    }
+  },
+  "multiFunction": {
+    "title": "Multi-function",
+    "hint": "Click an option to generate a new image with the current model config",
+    "items": {
+      "multiCameraGrid": {
+        "title": "Multi-camera 9-square Grid",
+        "desc": "Generate 9 different camera angles for the same scene"
+      },
+      "plotDeduction": {
+        "title": "Plot Deduction 4-square Grid",
+        "desc": "2x2 sequential story progression"
+      },
+      "continuousStoryboard": {
+        "title": "25-square Continuous Storyboard",
+        "desc": "5x5 continuous storyboard"
+      },
+      "lightingCorrection": {
+        "title": "Movie-level Lighting Correction",
+        "desc": "Professional lighting optimization"
+      },
+      "characterThreeView": {
+        "title": "Character Three-view Generation",
+        "desc": "Front/side/back three-view design"
+      },
+      "predictNext": {
+        "title": "Image Deduction - 3 Seconds Later",
+        "desc": "Predict the next scene"
+      },
+      "predictPrevious": {
+        "title": "Image Deduction - 5 Seconds Before",
+        "desc": " flashback to 5 seconds ago"
+      }
+    }
+  }
+}
