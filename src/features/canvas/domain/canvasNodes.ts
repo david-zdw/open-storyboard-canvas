@@ -161,6 +161,11 @@ export interface StoryboardGenNodeData {
   model: string;
   size: ImageSize;
   requestAspectRatio: string;
+  modelConfig?: {
+    entryId: string;
+    ratio: string;
+    extraParams?: Record<string, unknown>;
+  };
   extraParams?: Record<string, unknown>;
   imageUrl: string | null;
   previewImageUrl?: string | null;

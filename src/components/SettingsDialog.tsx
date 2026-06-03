@@ -11,6 +11,7 @@ import { useDialogTransition } from '@/components/ui/useDialogTransition';
 import { listModelProviders } from '@/features/canvas/models';
 import type { SettingsCategory } from '@/features/settings/settingsEvents';
 import { CustomProvidersSection } from '@/components/settings/CustomProvidersSection';
+import { ModernProvidersSection } from '@/components/settings/ModernProvidersSection';
 import { DreaminaSection } from '@/components/settings/DreaminaSection';
 import { PromptManagementSection } from '@/components/settings/PromptManagementSection';
 import { PromptPresetsSection } from '@/components/settings/PromptPresetsSection';
@@ -44,6 +45,10 @@ void _UNUSED_PROVIDER_URLS_KEPT_FOR_FUTURE_USE;
 
 const PROJECT_REPOSITORY_URL = 'https://github.com/ganbo-gab/open-storyboard-canvas';
 const ORIGINAL_PROJECT_URL = 'https://github.com/henjicc/Storyboard-Copilot';
+
+function normalizeSettingsCategory(category: SettingsCategory): SettingsCategory {
+  return category === 'providers' ? 'providersNew' : category;
+}
 
 function SettingsCheckboxCard({
   title,
@@ -97,6 +102,7 @@ export function SettingsDialog({
     storyboardGenAutoInferEmptyFrame,
     ignoreAtTagWhenCopyingAndGenerating,
     appendParameterConstraintsToPrompt,
+    collapseNodeActionToolbarByDefault,
     enableStoryboardGenGridPreviewShortcut,
     showStoryboardGenAdvancedRatioControls,
     useLegacyPanoramaControlDirection,
@@ -116,6 +122,7 @@ export function SettingsDialog({
     setStoryboardGenAutoInferEmptyFrame,
     setIgnoreAtTagWhenCopyingAndGenerating,
     setAppendParameterConstraintsToPrompt,
+    setCollapseNodeActionToolbarByDefault,
     setEnableStoryboardGenGridPreviewShortcut,
     setShowStoryboardGenAdvancedRatioControls,
     setUseLegacyPanoramaControlDirection,
@@ -134,7 +141,9 @@ export function SettingsDialog({
     const visibleIds = new Set(['grsai']);
     return listModelProviders().slice().filter((p) => visibleIds.has(p.id));
   }, []);
-  const [activeCategory, setActiveCategory] = useState<SettingsCategory>(initialCategory);
+  const [activeCategory, setActiveCategory] = useState<SettingsCategory>(
+    normalizeSettingsCategory(initialCategory)
+  );
   const [appVersion, setAppVersion] = useState<string>('');
   const [localApiKeys, setLocalApiKeys] = useState<Record<string, string>>(apiKeys);
   const [localGrsaiNanoBananaProModel, setLocalGrsaiNanoBananaProModel] = useState(
@@ -157,6 +166,8 @@ export function SettingsDialog({
     useState(ignoreAtTagWhenCopyingAndGenerating);
   const [localAppendParameterConstraintsToPrompt, setLocalAppendParameterConstraintsToPrompt] =
     useState(appendParameterConstraintsToPrompt);
+  const [localCollapseNodeActionToolbarByDefault, setLocalCollapseNodeActionToolbarByDefault] =
+    useState(collapseNodeActionToolbarByDefault);
   const [localEnableStoryboardGenGridPreviewShortcut, setLocalEnableStoryboardGenGridPreviewShortcut] =
     useState(enableStoryboardGenGridPreviewShortcut);
   const [localShowStoryboardGenAdvancedRatioControls, setLocalShowStoryboardGenAdvancedRatioControls] =
@@ -211,6 +222,7 @@ export function SettingsDialog({
     setLocalStoryboardGenAutoInferEmptyFrame(storyboardGenAutoInferEmptyFrame);
     setLocalIgnoreAtTagWhenCopyingAndGenerating(ignoreAtTagWhenCopyingAndGenerating);
     setLocalAppendParameterConstraintsToPrompt(appendParameterConstraintsToPrompt);
+    setLocalCollapseNodeActionToolbarByDefault(collapseNodeActionToolbarByDefault);
     setLocalEnableStoryboardGenGridPreviewShortcut(enableStoryboardGenGridPreviewShortcut);
     setLocalShowStoryboardGenAdvancedRatioControls(showStoryboardGenAdvancedRatioControls);
     setLocalUseLegacyPanoramaControlDirection(useLegacyPanoramaControlDirection);
@@ -232,7 +244,7 @@ export function SettingsDialog({
       return;
     }
 
-    setActiveCategory(initialCategory);
+    setActiveCategory(normalizeSettingsCategory(initialCategory));
   }, [initialCategory, isOpen]);
 
   const handleSave = useCallback(() => {
@@ -247,6 +259,7 @@ export function SettingsDialog({
     setStoryboardGenAutoInferEmptyFrame(localStoryboardGenAutoInferEmptyFrame);
     setIgnoreAtTagWhenCopyingAndGenerating(localIgnoreAtTagWhenCopyingAndGenerating);
     setAppendParameterConstraintsToPrompt(localAppendParameterConstraintsToPrompt);
+    setCollapseNodeActionToolbarByDefault(localCollapseNodeActionToolbarByDefault);
     setEnableStoryboardGenGridPreviewShortcut(localEnableStoryboardGenGridPreviewShortcut);
     setShowStoryboardGenAdvancedRatioControls(localShowStoryboardGenAdvancedRatioControls);
     setUseLegacyPanoramaControlDirection(localUseLegacyPanoramaControlDirection);
@@ -269,6 +282,7 @@ export function SettingsDialog({
     localStoryboardGenAutoInferEmptyFrame,
     localIgnoreAtTagWhenCopyingAndGenerating,
     localAppendParameterConstraintsToPrompt,
+    localCollapseNodeActionToolbarByDefault,
     localEnableStoryboardGenGridPreviewShortcut,
     localShowStoryboardGenAdvancedRatioControls,
     localUseLegacyPanoramaControlDirection,
@@ -289,6 +303,7 @@ export function SettingsDialog({
     setStoryboardGenAutoInferEmptyFrame,
     setIgnoreAtTagWhenCopyingAndGenerating,
     setAppendParameterConstraintsToPrompt,
+    setCollapseNodeActionToolbarByDefault,
     setEnableStoryboardGenGridPreviewShortcut,
     setShowStoryboardGenAdvancedRatioControls,
     setUseLegacyPanoramaControlDirection,
@@ -401,17 +416,31 @@ export function SettingsDialog({
               </button>
 
               <button
-                onClick={() => setActiveCategory('providers')}
+                onClick={() => setActiveCategory('providersNew')}
                 className={`
                 w-full flex items-center gap-3 px-4 py-2.5 text-left
                 transition-colors
-                ${activeCategory === 'providers'
+                ${activeCategory === 'providersNew'
                     ? 'bg-accent/10 text-text-dark border-l-2 border-accent'
                     : 'text-text-muted hover:bg-bg-dark hover:text-text-dark'
                   }
               `}
               >
-                <span className="text-sm">添加服务商</span>
+                <span className="text-sm">添加供应商（新）</span>
+              </button>
+
+              <button
+                onClick={() => setActiveCategory('providersOld')}
+                className={`
+                w-full flex items-center gap-3 px-4 py-2.5 text-left
+                transition-colors
+                ${activeCategory === 'providersOld'
+                    ? 'bg-accent/10 text-text-dark border-l-2 border-accent'
+                    : 'text-text-muted hover:bg-bg-dark hover:text-text-dark'
+                  }
+              `}
+              >
+                <span className="text-sm">添加供应商（老）</span>
               </button>
 
               <button
@@ -507,7 +536,7 @@ export function SettingsDialog({
                 <div className="ui-scrollbar flex-1 overflow-y-auto px-6 py-5">
                   <CustomProvidersSection
                     mode="list"
-                    onRequestAdd={() => setActiveCategory('providers')}
+                    onRequestAdd={(target) => setActiveCategory(target === 'old' ? 'providersOld' : 'providersNew')}
                   />
                 </div>
               </div>
@@ -545,11 +574,41 @@ export function SettingsDialog({
 
             {activeCategory === 'promptPresets' && <PromptPresetsSection />}
 
-            {activeCategory === 'providers' && (
+            {activeCategory === 'providersNew' && (
+              <div className="flex flex-1 flex-col overflow-hidden">
+                <div className="ui-scrollbar flex-1 overflow-y-auto px-6 py-5">
+                  <ModernProvidersSection />
+                </div>
+
+                <div className="shrink-0 flex justify-end border-t border-border-dark px-6 py-4">
+                  <button
+                    onClick={onClose}
+                    className="rounded border border-border-dark px-4 py-2 text-sm font-medium text-text-dark transition-colors hover:bg-bg-dark"
+                  >
+                    {t('common.close')}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeCategory === 'providersOld' && (
               <div className="flex flex-1 flex-col overflow-hidden">
                 <div className="ui-scrollbar flex-1 overflow-y-auto px-6 py-5">
                   <div className="grid grid-cols-[1fr_280px] gap-4">
                     <div className="space-y-5 min-w-0">
+                      <div className="rounded-lg border border-accent/30 bg-accent/10 p-4">
+                        <div className="text-sm font-medium text-text-dark">推荐使用新供应商接入</div>
+                        <p className="mt-1 text-xs leading-5 text-text-muted">
+                          如果你的供应商 API 基本符合 OpenAI Images、Gemini、Fal 等官方或主流调用格式，推荐使用新供应商。只有接口存在自定义路由、特殊请求体、multipart/form-data、轮询或签名代理等复杂规则时，再用老供应商精细配置。
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setActiveCategory('providersNew')}
+                          className="mt-3 rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-accent/90"
+                        >
+                          去添加供应商（新）
+                        </button>
+                      </div>
                       {/* Top action: copy tutorial prompt — replaces the
                           previously visible GRSAI built-in key card at this
                           position. */}
@@ -797,6 +856,13 @@ export function SettingsDialog({
                     onCheckedChange={setLocalAppendParameterConstraintsToPrompt}
                     title={t('settings.appendParameterConstraintsToPrompt')}
                     description={t('settings.appendParameterConstraintsToPromptDesc')}
+                  />
+
+                  <SettingsCheckboxCard
+                    checked={localCollapseNodeActionToolbarByDefault}
+                    onCheckedChange={setLocalCollapseNodeActionToolbarByDefault}
+                    title={t('settings.collapseNodeActionToolbarByDefault')}
+                    description={t('settings.collapseNodeActionToolbarByDefaultDesc')}
                   />
 
                   <SettingsCheckboxCard

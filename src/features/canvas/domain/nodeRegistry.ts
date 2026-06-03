@@ -225,7 +225,7 @@ const storyboardGenNodeDefinition: CanvasNodeDefinition<StoryboardGenNodeData> =
   type: CANVAS_NODE_TYPES.storyboardGen,
   menuLabelKey: 'node.menu.storyboardGen',
   menuIcon: 'sparkles',
-  visibleInMenu: false,
+  visibleInMenu: true,
   capabilities: {
     toolbar: true,
     promptInput: false,
@@ -306,7 +306,7 @@ const blueprintNodeDefinition: CanvasNodeDefinition<BlueprintNodeData> = {
     sourceHandle: true,
     targetHandle: true,
     connectMenu: {
-      fromSource: true,
+      fromSource: false,
       fromTarget: false,
     },
   },

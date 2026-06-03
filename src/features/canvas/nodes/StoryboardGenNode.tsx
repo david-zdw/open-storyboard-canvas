@@ -55,17 +55,9 @@ import {
   removeTextRange,
   resolveReferenceAwareDeleteRange,
 } from '@/features/canvas/application/referenceTokenEditing';
-import {
-  DEFAULT_IMAGE_MODEL_ID,
-  getImageModel,
-  listImageModels,
-  resolveImageModelResolution,
-  resolveImageModelResolutions,
-} from '@/features/canvas/models';
-import { GRSAI_NANO_BANANA_PRO_MODEL_ID } from '@/features/canvas/models/image/grsai/nanoBananaPro';
-import { FAL_NANO_BANANA_2_MODEL_ID } from '@/features/canvas/models/image/fal/nanoBanana2';
-import { KIE_NANO_BANANA_2_MODEL_ID } from '@/features/canvas/models/image/kie/nanoBanana2';
-import { ModelParamsControls } from '@/features/canvas/ui/ModelParamsControls';
+import { useImageModelCatalog } from '@/features/canvas/application/modelCatalog';
+import { resolveActiveModelForPanel } from '@/features/canvas/application/resolveActiveModelForPanel';
+import { ModelConfigPicker } from '@/features/canvas/ui/ModelConfigPicker';
 import { CanvasNodeImage } from '@/features/canvas/ui/CanvasNodeImage';
 import {
   UiButton,
@@ -73,10 +65,7 @@ import {
 import { NodeHeader, NODE_HEADER_FLOATING_POSITION_CLASS } from '@/features/canvas/ui/NodeHeader';
 import { NodeResizeHandle } from '@/features/canvas/ui/NodeResizeHandle';
 import {
-  NODE_CONTROL_CHIP_CLASS,
   NODE_CONTROL_ICON_CLASS,
-  NODE_CONTROL_MODEL_CHIP_CLASS,
-  NODE_CONTROL_PARAMS_CHIP_CLASS,
   NODE_CONTROL_PRIMARY_BUTTON_CLASS,
 } from '@/features/canvas/ui/nodeControlStyles';
 
@@ -459,13 +448,21 @@ function toCssAspectRatio(aspectRatio: string): string {
  * 将 ImageSize 解析为像素宽度
  */
 function resolveSizeToPixels(size: string): number {
+  const normalizedSize = size.trim();
+  const pixelSizeMatch = /^(\d{3,5})x(\d{3,5})$/i.exec(normalizedSize);
+  if (pixelSizeMatch) {
+    return Math.max(Number(pixelSizeMatch[1]), Number(pixelSizeMatch[2]));
+  }
   const sizeMap: Record<string, number> = {
     '0.5K': 512,
     '1K': 1024,
     '2K': 2048,
     '4K': 4096,
+    '1k': 1024,
+    '2k': 2048,
+    '4k': 4096,
   };
-  return sizeMap[size] ?? 1024;
+  return sizeMap[normalizedSize] ?? sizeMap[normalizedSize.toUpperCase()] ?? 1024;
 }
 
 /**
@@ -551,8 +548,6 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
   const addNode = useCanvasStore((state) => state.addNode);
   const addEdge = useCanvasStore((state) => state.addEdge);
   const findNodePosition = useCanvasStore((state) => state.findNodePosition);
-  const apiKeys = useSettingsStore((state) => state.apiKeys);
-  const grsaiNanoBananaProModel = useSettingsStore((state) => state.grsaiNanoBananaProModel);
   const storyboardGenKeepStyleConsistent = useSettingsStore(
     (state) => state.storyboardGenKeepStyleConsistent
   );
@@ -619,43 +614,45 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
     [incomingImageItems]
   );
 
-  const imageModels = useMemo(() => listImageModels(), []);
-
-  const selectedModel = useMemo(() => {
-    const modelId = nodeData.model ?? DEFAULT_IMAGE_MODEL_ID;
-    return getImageModel(modelId);
-  }, [nodeData.model]);
-  const providerApiKey = apiKeys[selectedModel.providerId] ?? '';
+  const catalog = useImageModelCatalog();
+  const firstUsableCatalogEntry = useMemo(() => catalog.find((entry) => entry.usable), [catalog]);
+  const nodeModelConfig = nodeData.modelConfig ?? (firstUsableCatalogEntry
+    ? {
+      entryId: firstUsableCatalogEntry.id,
+      ratio: firstUsableCatalogEntry.supportedRatios.includes(AUTO_REQUEST_ASPECT_RATIO)
+        ? AUTO_REQUEST_ASPECT_RATIO
+        : (firstUsableCatalogEntry.supportedRatios[0] ?? DEFAULT_ASPECT_RATIO),
+      extraParams: {},
+    }
+    : undefined);
+  const currentCatalogEntry = useMemo(
+    () => catalog.find((entry) => entry.id === nodeModelConfig?.entryId),
+    [catalog, nodeModelConfig?.entryId]
+  );
   const effectiveExtraParams = useMemo(
     () => ({
       ...(nodeData.extraParams ?? {}),
-      ...(selectedModel.id === GRSAI_NANO_BANANA_PRO_MODEL_ID
-        ? { grsai_pro_model: grsaiNanoBananaProModel }
-        : {}),
+      ...(nodeModelConfig?.extraParams ?? {}),
     }),
-    [grsaiNanoBananaProModel, nodeData.extraParams, selectedModel.id]
+    [nodeData.extraParams, nodeModelConfig?.extraParams]
   );
-  const resolutionOptions = useMemo(
-    () => resolveImageModelResolutions(selectedModel, { extraParams: effectiveExtraParams }),
-    [effectiveExtraParams, selectedModel]
-  );
-
   const selectedResolution = useMemo((): AspectRatioChoice => {
-    return resolveImageModelResolution(selectedModel, nodeData.size, {
-      extraParams: effectiveExtraParams,
-    });
-  }, [effectiveExtraParams, nodeData.size, selectedModel]);
-
-  const aspectRatioOptions = useMemo<AspectRatioChoice[]>(
-    () => [AUTO_ASPECT_RATIO_OPTION, ...selectedModel.aspectRatios],
-    [selectedModel.aspectRatios]
-  );
+    const resolution =
+      nodeModelConfig?.extraParams?.resolutionType ??
+      nodeModelConfig?.extraParams?.size ??
+      nodeData.size ??
+      '2K';
+    const value = String(resolution);
+    return { value, label: value };
+  }, [nodeData.size, nodeModelConfig?.extraParams]);
 
   const selectedAspectRatio = useMemo((): AspectRatioChoice => {
-    const nodeAspectRatio = nodeData.requestAspectRatio;
-    const found = nodeAspectRatio ? aspectRatioOptions.find((item) => item.value === nodeAspectRatio) : undefined;
-    return found ?? AUTO_ASPECT_RATIO_OPTION;
-  }, [aspectRatioOptions, nodeData.requestAspectRatio]);
+    const ratio = nodeModelConfig?.ratio ?? nodeData.requestAspectRatio ?? AUTO_REQUEST_ASPECT_RATIO;
+    return {
+      value: ratio,
+      label: ratio === AUTO_REQUEST_ASPECT_RATIO ? AUTO_ASPECT_RATIO_OPTION.label : ratio,
+    };
+  }, [nodeData.requestAspectRatio, nodeModelConfig?.ratio]);
 
   const ratioControlMode: StoryboardRatioControlMode = showStoryboardGenAdvancedRatioControls
     ? (nodeData.ratioControlMode === 'overall' ? 'overall' : 'cell')
@@ -722,16 +719,13 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
     };
   }, [frameAspectRatioValue, nodeData.gridCols, nodeData.gridRows]);
 
-  const requestResolution = selectedModel.resolveRequest({
-    referenceImageCount: incomingImages.length,
-  });
-  const showWebSearchToggle =
-    selectedModel.id === FAL_NANO_BANANA_2_MODEL_ID ||
-    selectedModel.id === KIE_NANO_BANANA_2_MODEL_ID;
-  const webSearchEnabled = Boolean(nodeData.extraParams?.enable_web_search);
   const supportedAspectRatioValues = useMemo(
-    () => selectedModel.aspectRatios.map((item) => item.value),
-    [selectedModel.aspectRatios]
+    () => {
+      const supported = (currentCatalogEntry?.supportedRatios ?? FRIENDLY_ASPECT_RATIO_CANDIDATES)
+        .filter((ratio) => ratio !== AUTO_REQUEST_ASPECT_RATIO);
+      return supported.length > 0 ? supported : FRIENDLY_ASPECT_RATIO_CANDIDATES;
+    },
+    [currentCatalogEntry?.supportedRatios]
   );
   const mappedOverallRequestAspectRatio = useMemo(
     () =>
@@ -867,27 +861,12 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
     updateNodeInternals(id);
   }, [id, resolvedNodeHeight, resolvedNodeWidth, updateNodeInternals]);
 
-  // Sync model, size, aspect ratio with node data
+  // Seed legacy nodes with the unified provider/model config used by the current picker.
   useEffect(() => {
-    if (nodeData.model !== selectedModel.id) {
-      updateNodeData(id, { model: selectedModel.id });
+    if (!nodeData.modelConfig && nodeModelConfig) {
+      updateNodeData(id, { modelConfig: nodeModelConfig });
     }
-
-    if (nodeData.size !== selectedResolution.value) {
-      updateNodeData(id, { size: selectedResolution.value as ImageSize });
-    }
-
-    if (nodeData.requestAspectRatio !== selectedAspectRatio.value) {
-      updateNodeData(id, { requestAspectRatio: selectedAspectRatio.value });
-    }
-  }, [
-    id,
-    nodeData,
-    selectedModel.id,
-    selectedResolution.value,
-    selectedAspectRatio.value,
-    updateNodeData,
-  ]);
+  }, [id, nodeData.modelConfig, nodeModelConfig, updateNodeData]);
 
   useEffect(() => {
     if (incomingImages.length === 0) {
@@ -1071,14 +1050,33 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
       return;
     }
 
-    if (!providerApiKey) {
-      const errorMessage = '请在设置中填写 API Key';
+    const latestNode = useCanvasStore.getState().nodes.find((item) => item.id === id);
+    const latestNodeData = latestNode?.data as StoryboardGenNodeData | undefined;
+    const latestNodeModelConfig = latestNodeData?.modelConfig ?? nodeModelConfig ?? null;
+    const resolved = resolveActiveModelForPanel('storyboardGenNode', latestNodeModelConfig);
+    if (resolved.entryId.startsWith('custom:') && resolved.requiresApiKey && !resolved.apiKey) {
+      const errorMessage = `自定义服务商「${resolved.providerLabel}」未填写 API Key`;
+      setError(errorMessage);
+      void showErrorDialog(errorMessage, '错误');
+      return;
+    }
+    if (!resolved.entryId.startsWith('dreamina:') && !resolved.entryId.startsWith('custom:')) {
+      const errorMessage = '请先在「设置 → 我的配置」里添加至少一个服务商，或在「Dreamina」里登录 CLI 后再生成。';
       setError(errorMessage);
       void showErrorDialog(errorMessage, '错误');
       return;
     }
 
-    const generationDurationMs = selectedModel.expectedDurationMs ?? 60000;
+    const effectiveExtraParamsForRequest = { ...effectiveExtraParams, ...resolved.extraParams };
+    const requestResolutionValue = String(
+      resolved.extraParams?.resolutionType ??
+      resolved.extraParams?.size ??
+      effectiveExtraParams.resolutionType ??
+      effectiveExtraParams.size ??
+      selectedResolution.value ??
+      '2K'
+    );
+    const generationDurationMs = 60000;
     const generationStartedAt = Date.now();
     const runtimeDiagnostics = await getRuntimeDiagnostics();
 
@@ -1099,9 +1097,9 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
         displayName: EXPORT_RESULT_DISPLAY_NAME.storyboardGenOutput,
         resultKind: 'storyboardGenOutput',
         prompt: '',
-        model: selectedModel.id,
-        size: selectedResolution.value as ImageSize,
-        requestAspectRatio: mappedOverallRequestAspectRatio,
+        model: resolved.modelForGateway,
+        size: requestResolutionValue as ImageSize,
+        requestAspectRatio: resolvedRequestAspectRatio,
       }
     );
 
@@ -1112,14 +1110,12 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
     setError(null);
 
     try {
-      await canvasAiGateway.setApiKey(selectedModel.providerId, providerApiKey);
-
       // 生成网格图片作为最后一张参考图片
       const gridImageDataUrl = generateGridImageDataUrl(
         resolvedRequestAspectRatio,
         safeRows,
         safeCols,
-        selectedResolution.value
+        requestResolutionValue
       );
 
       // 将网格图片作为最后一张参考图片
@@ -1135,26 +1131,26 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
       const promptForRequest = appendGenerationParameterConstraints(prompt, {
         enabled: appendParameterConstraintsToPrompt,
         aspectRatio: resolvedRequestAspectRatio,
-        resolution: selectedResolution.value,
+        resolution: requestResolutionValue,
         count: 1,
       });
 
       const jobId = await canvasAiGateway.submitGenerateImageJob({
         prompt: promptForRequest,
-        model: requestResolution.requestModel,
-        size: selectedResolution.value,
+        model: resolved.modelForGateway,
+        size: requestResolutionValue,
         aspectRatio: resolvedRequestAspectRatio,
         referenceImages: allReferenceImages,
-        extraParams: effectiveExtraParams,
+        extraParams: effectiveExtraParamsForRequest,
       });
       const generationDebugContext: GenerationDebugContext = {
         sourceType: 'storyboardGen',
-        providerId: selectedModel.providerId,
-        requestModel: requestResolution.requestModel,
-        requestSize: selectedResolution.value,
+        providerId: resolved.providerId,
+        requestModel: resolved.modelForGateway,
+        requestSize: requestResolutionValue,
         requestAspectRatio: resolvedRequestAspectRatio,
         prompt: promptForRequest,
-        extraParams: effectiveExtraParams,
+        extraParams: effectiveExtraParamsForRequest,
         referenceImageCount: allReferenceImages.length,
         referenceImagePlaceholders: createReferenceImagePlaceholders(allReferenceImages.length),
         appVersion: runtimeDiagnostics.appVersion,
@@ -1166,7 +1162,7 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
       updateNodeData(newNodeId, {
         generationJobId: jobId,
         generationSourceType: 'storyboardGen',
-        generationProviderId: selectedModel.providerId,
+        generationProviderId: resolved.providerId,
         generationClientSessionId: CURRENT_RUNTIME_SESSION_ID,
         generationDebugContext,
         generationStoryboardMetadata: {
@@ -1179,12 +1175,12 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
       const resolvedError = resolveErrorContent(generationError, '生成失败');
       const generationDebugContext: GenerationDebugContext = {
         sourceType: 'storyboardGen',
-        providerId: selectedModel.providerId,
-        requestModel: requestResolution.requestModel,
-        requestSize: selectedResolution.value,
+        providerId: resolved.providerId,
+        requestModel: resolved.modelForGateway,
+        requestSize: requestResolutionValue,
         requestAspectRatio: resolvedRequestAspectRatio,
         prompt,
-        extraParams: effectiveExtraParams,
+        extraParams: effectiveExtraParamsForRequest,
         referenceImageCount: incomingImages.length + 1,
         referenceImagePlaceholders: createReferenceImagePlaceholders(incomingImages.length + 1),
         appVersion: runtimeDiagnostics.appVersion,
@@ -1214,17 +1210,12 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
       });
     }
   }, [
-    providerApiKey,
+    id,
     nodeData,
     incomingImages,
-    requestResolution.requestModel,
     effectiveExtraParams,
-    selectedModel.expectedDurationMs,
-    selectedModel.id,
-    selectedModel.providerId,
-    supportedAspectRatioValues,
+    nodeModelConfig,
     setSelectedNode,
-    selectedAspectRatio.value,
     selectedResolution.value,
     addNode,
     addEdge,
@@ -1631,47 +1622,18 @@ export const StoryboardGenNode = memo(({ id, data, selected, width, height }: St
         className="relative mx-auto mt-auto flex shrink-0 items-center justify-between"
         style={{ width: `${frameLayout.paramsRowWidth}px` }}
       >
-        <ModelParamsControls
-          imageModels={imageModels}
-          selectedModel={selectedModel}
-          resolutionOptions={resolutionOptions}
-          selectedResolution={selectedResolution}
-          selectedAspectRatio={selectedAspectRatio}
-          aspectRatioOptions={aspectRatioOptions}
-          onModelChange={(modelId) => updateNodeData(id, { model: modelId })}
-          onResolutionChange={(resolution) =>
-            updateNodeData(id, { size: resolution as ImageSize })
-          }
-          onAspectRatioChange={(aspectRatio) =>
-            updateNodeData(id, { requestAspectRatio: aspectRatio })
-          }
-          extraParams={nodeData.extraParams}
-          onExtraParamChange={(key, value) =>
+        <ModelConfigPicker
+          panelKey="storyboardGenNode"
+          className="min-w-0 flex-1"
+          value={nodeModelConfig}
+          onChange={(modelConfig) => {
+            const nextSize = modelConfig.extraParams?.resolutionType ?? modelConfig.extraParams?.size;
             updateNodeData(id, {
-              extraParams: {
-                ...(nodeData.extraParams ?? {}),
-                [key]: value,
-              },
-            })
-          }
-          showWebSearchToggle={showWebSearchToggle}
-          webSearchEnabled={webSearchEnabled}
-          onWebSearchToggle={(enabled) =>
-            updateNodeData(id, {
-              extraParams: {
-                ...(nodeData.extraParams ?? {}),
-                enable_web_search: enabled,
-              },
-            })
-          }
-          triggerSize="sm"
-          chipClassName={NODE_CONTROL_CHIP_CLASS}
-          modelChipClassName={NODE_CONTROL_MODEL_CHIP_CLASS}
-          paramsChipClassName={NODE_CONTROL_PARAMS_CHIP_CLASS}
-          modelPanelAlign="center"
-          paramsPanelAlign="center"
-          modelPanelClassName="inline-block min-w-[300px] max-w-[calc(100vw-32px)] p-2"
-          paramsPanelClassName="w-[420px] p-3"
+              modelConfig,
+              requestAspectRatio: modelConfig.ratio,
+              ...(typeof nextSize === 'string' ? { size: nextSize as ImageSize } : {}),
+            });
+          }}
         />
 
         <UiButton

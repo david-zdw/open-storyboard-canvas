@@ -10,7 +10,7 @@ import {
   useRef,
 } from 'react';
 import { Handle, Position, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
-import { Sparkles, Video } from 'lucide-react';
+import { Check, ChevronRight, Sparkles, Video, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -97,6 +97,7 @@ interface PickerAnchor {
 
 const PICKER_FALLBACK_ANCHOR: PickerAnchor = { left: 8, top: 8 };
 const PICKER_Y_OFFSET_PX = 20;
+const FUNCTION_PICKER_WIDTH_PX = 280;
 const IMAGE_EDIT_NODE_MIN_WIDTH = 520;
 const IMAGE_EDIT_NODE_MIN_HEIGHT = 260;
 const IMAGE_EDIT_NODE_MAX_WIDTH = 1400;
@@ -105,6 +106,7 @@ const IMAGE_EDIT_NODE_DEFAULT_WIDTH = 680;
 const IMAGE_EDIT_NODE_DEFAULT_HEIGHT = 380;
 const TEXT_DRAFT_COMMIT_DELAY_MS = 650;
 const PASTED_REFERENCE_NODE_OFFSET_X = 280;
+const PROMPT_PRESET_GROUP_ID = '__prompt_presets__';
 
 function getTextareaCaretOffset(
   textarea: HTMLTextAreaElement,
@@ -233,6 +235,9 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
   const [pickerCursor, setPickerCursor] = useState<number | null>(null);
   const [pickerActiveIndex, setPickerActiveIndex] = useState(0);
   const [pickerAnchor, setPickerAnchor] = useState<PickerAnchor>(PICKER_FALLBACK_ANCHOR);
+  const [showFunctionPicker, setShowFunctionPicker] = useState(false);
+  const [functionPickerAnchor, setFunctionPickerAnchor] = useState<PickerAnchor>(PICKER_FALLBACK_ANCHOR);
+  const [functionPickerActiveIndex, setFunctionPickerActiveIndex] = useState(0);
   const [showCameraControl, setShowCameraControl] = useState(false);
   const [generateCount, setGenerateCount] = useState(1);
   const [showCountPicker, setShowCountPicker] = useState(false);
@@ -251,6 +256,7 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
   const addEdge = useCanvasStore((state) => state.addEdge);
   const apiKeys = useSettingsStore((state) => state.apiKeys);
   const grsaiNanoBananaProModel = useSettingsStore((state) => state.grsaiNanoBananaProModel);
+  const promptPresets = useSettingsStore((state) => state.promptPresets);
 
   const incomingImages = useMemo(
     () => parseInputImageSignature(incomingImageSignature),
@@ -270,6 +276,34 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
     () => incomingImageItems.map((item) => resolveImageDisplayUrl(item.imageUrl)),
     [incomingImageItems]
   );
+  const functionPickerItems = useMemo(() => [
+    ...MULTI_FUNCTION_ITEMS.map((item) => ({
+      kind: 'function' as const,
+      id: item.id,
+      label: t(item.titleKey) as string,
+      description: t(item.descKey) as string,
+      icon: item.icon,
+    })),
+    ...(promptPresets.length > 0
+      ? [{
+        kind: 'presetGroup' as const,
+        id: PROMPT_PRESET_GROUP_ID,
+        label: t('nodeToolbar.promptPreset') as string,
+        description: t('nodeToolbar.promptPresetMenuTitle') as string,
+        icon: Sparkles,
+      }]
+      : []),
+  ], [promptPresets, t]);
+  const selectedFunctionLabel = useMemo(() => {
+    if (data.selectedPromptPresetId) {
+      return promptPresets.find((preset) => preset.id === data.selectedPromptPresetId)?.name ?? null;
+    }
+    if (data.selectedFunctionChip) {
+      const item = MULTI_FUNCTION_ITEMS.find((candidate) => candidate.id === data.selectedFunctionChip);
+      return item ? t(item.titleKey) as string : null;
+    }
+    return null;
+  }, [data.selectedFunctionChip, data.selectedPromptPresetId, promptPresets, t]);
   const catalog = useImageModelCatalog();
   const firstUsableCatalogEntry = useMemo(() => catalog.find((entry) => entry.usable), [catalog]);
   const nodeModelConfig = data.modelConfig ?? (firstUsableCatalogEntry
@@ -449,6 +483,8 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
 
       setShowImagePicker(false);
       setPickerCursor(null);
+      setShowFunctionPicker(false);
+      setFunctionPickerActiveIndex(0);
       setShowCountPicker(false);
     };
 
@@ -775,6 +811,48 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
     });
   }, [flushPromptDraft, pickerCursor]);
 
+  const selectPromptPresetFromFunctionPicker = useCallback((presetId: string) => {
+    updateNodeData(id, {
+      selectedFunctionChip: null,
+      selectedPromptPresetId: presetId,
+    });
+    setShowFunctionPicker(false);
+    setFunctionPickerActiveIndex(0);
+    requestAnimationFrame(() => {
+      promptRef.current?.focus();
+      syncPromptHighlightScroll();
+    });
+  }, [id, updateNodeData]);
+
+  const selectFunctionPickerItem = useCallback((index: number) => {
+    const item = functionPickerItems[index];
+    if (!item) return;
+    if (item.kind === 'function') {
+      updateNodeData(id, {
+        selectedFunctionChip: item.id,
+        selectedPromptPresetId: null,
+      });
+      setShowFunctionPicker(false);
+      setFunctionPickerActiveIndex(0);
+      requestAnimationFrame(() => {
+        promptRef.current?.focus();
+        syncPromptHighlightScroll();
+      });
+      return;
+    }
+    const firstPreset = promptPresets[0];
+    if (firstPreset) {
+      selectPromptPresetFromFunctionPicker(firstPreset.id);
+    }
+  }, [functionPickerItems, id, promptPresets, selectPromptPresetFromFunctionPicker, updateNodeData]);
+
+  const clearSelectedFunctionSource = useCallback(() => {
+    updateNodeData(id, {
+      selectedFunctionChip: null,
+      selectedPromptPresetId: null,
+    });
+  }, [id, updateNodeData]);
+
   const handlePromptPaste = useCallback(
     async (event: ReactClipboardEvent<HTMLTextAreaElement>) => {
       const imageFile = resolveClipboardImageFile(event.nativeEvent);
@@ -864,6 +942,39 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
         });
         return;
       }
+      if (
+        event.key === 'Backspace'
+        && !currentPrompt.trim()
+        && selectedFunctionLabel
+        && selectionStart === 0
+        && selectionEnd === 0
+      ) {
+        event.preventDefault();
+        clearSelectedFunctionSource();
+        return;
+      }
+    }
+
+    if (showFunctionPicker && functionPickerItems.length > 0) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setFunctionPickerActiveIndex((previous) => (previous + 1) % functionPickerItems.length);
+        return;
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setFunctionPickerActiveIndex((previous) =>
+          previous === 0 ? functionPickerItems.length - 1 : previous - 1
+        );
+        return;
+      }
+
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        selectFunctionPickerItem(functionPickerActiveIndex);
+        return;
+      }
     }
 
     if (showImagePicker && incomingImages.length > 0) {
@@ -888,6 +999,21 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
       }
     }
 
+    if (event.key === '/' && functionPickerItems.length > 0) {
+      event.preventDefault();
+      const cursor = event.currentTarget.selectionStart ?? promptDraftRef.current.length;
+      const anchor = resolvePickerAnchor(rootRef.current, event.currentTarget, cursor);
+      setFunctionPickerAnchor({
+        left: Math.max(8, Math.min(anchor.left, resolvedWidth - FUNCTION_PICKER_WIDTH_PX - 8)),
+        top: anchor.top,
+      });
+      setShowFunctionPicker(true);
+      setFunctionPickerActiveIndex(0);
+      setShowImagePicker(false);
+      setPickerCursor(null);
+      return;
+    }
+
     if (event.key === '@' && incomingImages.length > 0) {
       event.preventDefault();
       const cursor = event.currentTarget.selectionStart ?? promptDraftRef.current.length;
@@ -898,11 +1024,13 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
       return;
     }
 
-    if (event.key === 'Escape' && showImagePicker) {
+    if (event.key === 'Escape' && (showImagePicker || showFunctionPicker)) {
       event.preventDefault();
       setShowImagePicker(false);
       setPickerCursor(null);
       setPickerActiveIndex(0);
+      setShowFunctionPicker(false);
+      setFunctionPickerActiveIndex(0);
       return;
     }
 
@@ -934,13 +1062,31 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
 
       <div ref={imageBoxRef} className="image-box relative min-h-0 flex-1 rounded-lg border border-[var(--canvas-node-field-border)] bg-[var(--canvas-node-field-bg)] p-2">
         <div className="relative h-full min-h-0">
+          {selectedFunctionLabel && (
+            <div className="absolute left-1 top-1 z-20 flex max-w-[calc(100%-8px)] items-center gap-1 rounded-md border border-accent/35 bg-accent/18 px-2 py-1 text-xs text-accent shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">{selectedFunctionLabel}</span>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  clearSelectedFunctionSource();
+                  promptRef.current?.focus();
+                }}
+                className="ml-0.5 rounded p-0.5 text-accent/80 hover:bg-accent/20 hover:text-accent"
+                title="移除已选功能"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          )}
           <div
             ref={promptHighlightRef}
             aria-hidden="true"
             className="ui-scrollbar pointer-events-none absolute inset-0 overflow-y-auto overflow-x-hidden text-sm leading-6 text-text-dark"
             style={{ scrollbarGutter: 'stable' }}
           >
-            <div className="min-h-full whitespace-pre-wrap break-words px-1 py-0.5">
+            <div className={`min-h-full whitespace-pre-wrap break-words px-1 py-0.5 ${selectedFunctionLabel ? 'pt-8' : ''}`}>
               {renderPromptWithHighlights(promptDraft, incomingImages.length)}
             </div>
           </div>
@@ -960,7 +1106,7 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
             onScroll={syncPromptHighlightScroll}
             onMouseDown={(event) => event.stopPropagation()}
             placeholder={t('node.imageEdit.promptPlaceholder')}
-            className="ui-scrollbar nodrag nowheel relative z-10 h-full w-full resize-none overflow-y-auto overflow-x-hidden border-none bg-transparent px-1 py-0.5 text-sm leading-6 text-transparent caret-text-dark outline-none placeholder:text-text-muted/80 focus:border-transparent whitespace-pre-wrap break-words"
+            className={`ui-scrollbar nodrag nowheel relative z-10 h-full w-full resize-none overflow-y-auto overflow-x-hidden border-none bg-transparent px-1 py-0.5 text-sm leading-6 text-transparent caret-text-dark outline-none placeholder:text-text-muted/80 focus:border-transparent whitespace-pre-wrap break-words ${selectedFunctionLabel ? 'pt-8' : ''}`}
             style={{ scrollbarGutter: 'stable' }}
           />
         </div>
@@ -1002,6 +1148,97 @@ export const ImageEditNode = memo(({ id, data, selected, width, height }: ImageE
                 </button>
               ))}
             </div>
+          </div>
+        )}
+
+        {showFunctionPicker && functionPickerItems.length > 0 && (
+          <div
+            className="nowheel absolute z-40 w-[280px] overflow-visible rounded-xl border border-[var(--canvas-node-field-border)] bg-[var(--canvas-node-menu-bg)] p-1.5 shadow-2xl"
+            style={{ left: functionPickerAnchor.left, top: functionPickerAnchor.top }}
+            onMouseDown={(event) => event.stopPropagation()}
+            onWheelCapture={(event) => event.stopPropagation()}
+          >
+            <div className="px-2 py-1 text-[11px] font-medium text-text-muted">
+              输入 / 快速选择功能
+            </div>
+            <div className="ui-scrollbar nowheel max-h-[260px] overflow-y-auto pr-1">
+              {functionPickerItems.map((item, index) => {
+                const Icon = item.icon;
+                const active = functionPickerActiveIndex === index;
+                const selected = item.kind === 'function'
+                  ? data.selectedFunctionChip === item.id
+                  : Boolean(data.selectedPromptPresetId);
+                return (
+                  <button
+                    key={`${item.kind}-${item.id}`}
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      selectFunctionPickerItem(index);
+                    }}
+                    onMouseEnter={() => setFunctionPickerActiveIndex(index)}
+                    className={`flex w-full items-start gap-2 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                      active
+                        ? 'bg-[var(--canvas-node-menu-active)] text-text-dark'
+                        : 'text-text-dark hover:bg-[var(--canvas-node-menu-hover)]'
+                    }`}
+                    title={item.description}
+                  >
+                    <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate">{item.label}</span>
+                      <span className="mt-0.5 block truncate text-[11px] text-text-muted">
+                        {item.kind === 'function' ? '内置功能提示词' : '我的提示词预设'}
+                      </span>
+                    </span>
+                    {selected && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />}
+                    {item.kind === 'presetGroup' && <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-text-muted" />}
+                  </button>
+                );
+              })}
+            </div>
+            {functionPickerItems[functionPickerActiveIndex]?.kind === 'presetGroup' && (
+              <div
+                className="nowheel absolute left-[calc(100%+8px)] w-[240px] overflow-hidden rounded-xl border border-[var(--canvas-node-field-border)] bg-[var(--canvas-node-menu-bg)] p-1.5 shadow-2xl"
+                style={{ top: `${Math.min(44 + functionPickerActiveIndex * 58, 150)}px` }}
+                onMouseDown={(event) => event.stopPropagation()}
+                onWheelCapture={(event) => event.stopPropagation()}
+              >
+                <div className="px-2 py-1 text-[11px] font-medium text-text-muted">
+                  我的提示词预设
+                </div>
+                <div className="ui-scrollbar nowheel max-h-[220px] overflow-y-auto pr-1">
+                  {promptPresets.map((preset) => {
+                    const presetSelected = data.selectedPromptPresetId === preset.id;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        className={`flex w-full items-start gap-2 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                          presetSelected
+                            ? 'bg-[var(--canvas-node-menu-active)] text-text-dark'
+                            : 'text-text-dark hover:bg-[var(--canvas-node-menu-hover)]'
+                        }`}
+                        title={preset.prompt}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          selectPromptPresetFromFunctionPicker(preset.id);
+                        }}
+                      >
+                        <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate">{preset.name}</span>
+                          <span className="mt-0.5 block truncate text-[11px] text-text-muted">
+                            我的提示词预设
+                          </span>
+                        </span>
+                        {presetSelected && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

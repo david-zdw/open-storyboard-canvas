@@ -28,7 +28,7 @@ interface CustomProvidersSectionProps {
   mode?: SectionMode;
   /** Callback for `list` mode — lets the host switch the sidebar to the add tab
    *  when the user clicks "+ 新增配置" from an empty list. */
-  onRequestAdd?: () => void;
+  onRequestAdd?: (target?: 'new' | 'old') => void;
 }
 
 const PRESET_RATIOS = ['21:9', '16:9', '4:1', '3:2', '4:3', '1:1', '3:4', '2:3', '9:16', '2:1'] as const;
@@ -103,6 +103,10 @@ function emptyDraft(): DraftConfig {
     extraParams: {},
     note: '',
   };
+}
+
+function isModernProviderConfig(provider: CustomProviderConfig): boolean {
+  return provider.extraParams?.providerConfigVersion === 'new-v1';
 }
 
 /** Turn a stored provider into an editable draft. */
@@ -686,7 +690,7 @@ export const CustomProvidersSection = memo(({ mode = 'both', onRequestAdd }: Cus
     }
     if (mode === 'list') {
       setPendingEditId(id);
-      onRequestAdd?.();
+      onRequestAdd?.(isModernProviderConfig(p) ? 'new' : 'old');
     }
   }, [providers, mode, onRequestAdd, setPendingEditId]);
 
@@ -697,7 +701,7 @@ export const CustomProvidersSection = memo(({ mode = 'both', onRequestAdd }: Cus
     setDefaultParamsError('');
     setModelFetchResult(null);
     if (mode === 'both') setTab('configure');
-    else if (mode === 'list') onRequestAdd?.();
+    else if (mode === 'list') onRequestAdd?.('new');
   }, [mode, onRequestAdd]);
 
   // Keep draft in sync when providers change externally (e.g. removal).
@@ -731,10 +735,10 @@ export const CustomProvidersSection = memo(({ mode = 'both', onRequestAdd }: Cus
       {mode !== 'list' && (
         <div>
           <h2 className="text-base font-semibold text-text-dark">
-            {mode === 'add' ? '添加服务商' : '配置模型服务'}
+            {mode === 'add' ? '添加供应商（老）' : '配置模型服务'}
           </h2>
           <p className="mt-1 text-xs text-text-muted">
-            接入任意主流图像生成服务。左侧填参数，右侧看说明 / 预设 / AI 配置教程，保存后在「我的配置」里可以查看修改。
+            如果供应商 API 符合官方或常见中转站调用格式，推荐使用「添加供应商（新）」。如果接口有自己的特殊路由、轮询任务、multipart、签名代理或复杂字段映射，再用这里的老版高级配置。
           </p>
         </div>
       )}
@@ -1554,10 +1558,10 @@ export const CustomProvidersSection = memo(({ mode = 'both', onRequestAdd }: Cus
               <div className="text-xs text-text-muted">还没有保存任何配置</div>
               <button
                 type="button"
-                onClick={handleNewFromScratch}
+                onClick={() => onRequestAdd?.('new')}
                 className="mt-3 inline-flex items-center gap-1 rounded-md bg-accent/20 px-3 py-1.5 text-xs text-accent hover:bg-accent/30"
               >
-                <Plus className="h-3 w-3" /> 去「配置模型服务」新建
+                <Plus className="h-3 w-3" /> 去「添加供应商（新）」新建
               </button>
             </div>
           ) : (
@@ -1566,10 +1570,20 @@ export const CustomProvidersSection = memo(({ mode = 'both', onRequestAdd }: Cus
                 {(() => {
                   const savedTestResult = providerTestResults[p.id];
                   const isTestingThisProvider = testingProviderId === p.id;
+                  const isModern = isModernProviderConfig(p);
                   return (
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-text-dark truncate">{p.label}</div>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="truncate text-sm font-medium text-text-dark">{p.label}</div>
+                      <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] ${
+                        isModern
+                          ? 'border-accent/35 bg-accent/15 text-accent'
+                          : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                      }`}>
+                        {isModern ? '新配置' : '老配置'}
+                      </span>
+                    </div>
                     <div className="mt-0.5 text-[11px] text-text-muted truncate font-mono">{p.baseUrl || '(未填 baseUrl)'}</div>
                     <div className="mt-0.5 text-[10px] text-text-muted">
                       接口：{p.apiStyle} · 请求 {formatBodyModeLabel(resolveCustomProviderBodyMode(p))} · 模型 {p.models.length} 个 · {p.supportsWebSearch ? '支持联网' : '不支持联网'}

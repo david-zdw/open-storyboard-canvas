@@ -1,4 +1,6 @@
 import { lazy, memo, Suspense, useEffect, useMemo, useCallback, useState } from 'react';
+import { NodeToolbar as ReactFlowNodeToolbar } from '@xyflow/react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { useCanvasStore } from '@/stores/canvasStore';
@@ -8,6 +10,9 @@ import {
   CANVAS_NODE_TYPES,
   EXPORT_RESULT_NODE_DEFAULT_WIDTH,
   EXPORT_RESULT_NODE_LAYOUT_HEIGHT,
+  isExportImageNode,
+  isImageEditNode,
+  isUploadNode,
   type CanvasNode,
 } from '@/features/canvas/domain/canvasNodes';
 import { getNodeSelectionToolbarMode } from '@/features/canvas/domain/nodeRegistry';
@@ -47,11 +52,20 @@ const BlueprintPanel = lazy(() =>
 import { NodeActionToolbar } from './NodeActionToolbar';
 import { NodeDeleteToolbar } from './NodeDeleteToolbar';
 import {
+  NODE_TOOLBAR_ALIGN,
+  NODE_TOOLBAR_CLASS,
+  NODE_TOOLBAR_OFFSET,
+  NODE_TOOLBAR_POSITION,
+} from './nodeToolbarConfig';
+import {
   createWhite2x1DataUrl,
   prepareLocalPanoramaSource,
   selectPanoramaRequestRatio,
 } from '@/features/canvas/application/panoramaNormalize';
 import type { ResolvedPanelModel } from '@/features/canvas/application/resolveActiveModelForPanel';
+
+const COLLAPSED_ACTION_TOOLBAR_TOGGLE_OFFSET = 8;
+const EXPANDED_ACTION_TOOLBAR_OFFSET = NODE_TOOLBAR_OFFSET + 48;
 
 async function setNativeApiKeyIfNeeded(resolved: ResolvedPanelModel): Promise<void> {
   if (resolved.builtinModel && resolved.apiKey) {
@@ -74,6 +88,10 @@ export const SelectedNodeOverlay = memo(() => {
   const appendParameterConstraintsToPrompt = useSettingsStore(
     (state) => state.appendParameterConstraintsToPrompt
   );
+  const collapseNodeActionToolbarByDefault = useSettingsStore(
+    (state) => state.collapseNodeActionToolbarByDefault
+  );
+  const [expandedActionToolbarNodeId, setExpandedActionToolbarNodeId] = useState<string | null>(null);
 
   // Live rect of the toolbar button that opened the panel. Updated every
   // animation frame so the panel follows when the user drags the node around
@@ -114,6 +132,53 @@ export const SelectedNodeOverlay = memo(() => {
   const selectedNodeToolbarMode = selectedNode
     ? getNodeSelectionToolbarMode(selectedNode.type)
     : 'none';
+  const selectedNodeSupportsCollapsibleToolbar = Boolean(
+    selectedNode
+    && (isUploadNode(selectedNode) || isImageEditNode(selectedNode) || isExportImageNode(selectedNode))
+  );
+  const shouldCollapseActionToolbar =
+    collapseNodeActionToolbarByDefault
+    && selectedNodeToolbarMode === 'full'
+    && selectedNodeSupportsCollapsibleToolbar;
+  const isActionToolbarExpanded =
+    !shouldCollapseActionToolbar || expandedActionToolbarNodeId === selectedNode?.id;
+
+  useEffect(() => {
+    setExpandedActionToolbarNodeId(null);
+  }, [collapseNodeActionToolbarByDefault, selectedNode?.id]);
+
+  useEffect(() => {
+    if (
+      !shouldCollapseActionToolbar
+      || !selectedNode
+      || isActionToolbarExpanded
+      || panelState.anchor?.nodeId !== selectedNode.id
+    ) {
+      return;
+    }
+    closePanel();
+  }, [
+    closePanel,
+    isActionToolbarExpanded,
+    panelState.anchor?.nodeId,
+    selectedNode,
+    shouldCollapseActionToolbar,
+  ]);
+
+  const handleToggleActionToolbar = useCallback(() => {
+    if (!selectedNode) {
+      return;
+    }
+    const isCurrentlyExpanded = expandedActionToolbarNodeId === selectedNode.id;
+    if (isCurrentlyExpanded && panelState.anchor?.nodeId === selectedNode.id) {
+      closePanel();
+    }
+    setExpandedActionToolbarNodeId(isCurrentlyExpanded ? null : selectedNode.id);
+  }, [closePanel, expandedActionToolbarNodeId, panelState.anchor?.nodeId, selectedNode]);
+
+  const actionToolbarToggleLabel = isActionToolbarExpanded
+    ? t('nodeToolbar.collapseToolbar')
+    : t('nodeToolbar.expandToolbar');
 
   useEffect(() => {
     if (!panelState.isOpen || !panelState.anchor) {
@@ -640,7 +705,39 @@ export const SelectedNodeOverlay = memo(() => {
 
   return (
     <>
-      {selectedNodeToolbarMode === 'full' && <NodeActionToolbar node={selectedNode} />}
+      {selectedNodeToolbarMode === 'full' && shouldCollapseActionToolbar && (
+        <ReactFlowNodeToolbar
+          nodeId={selectedNode.id}
+          isVisible
+          position={NODE_TOOLBAR_POSITION}
+          align={NODE_TOOLBAR_ALIGN}
+          offset={COLLAPSED_ACTION_TOOLBAR_TOGGLE_OFFSET}
+          className={NODE_TOOLBAR_CLASS}
+        >
+          <button
+            type="button"
+            className="pointer-events-auto inline-flex h-7 items-center gap-1 rounded-full border border-[var(--canvas-node-field-border)] bg-[var(--canvas-node-menu-bg)] px-2.5 text-[11px] font-medium text-text-dark shadow-lg backdrop-blur transition-colors hover:border-[var(--canvas-node-border-hover)] hover:bg-[var(--canvas-node-menu-hover)]"
+            onClick={(event) => {
+              event.stopPropagation();
+              handleToggleActionToolbar();
+            }}
+            title={actionToolbarToggleLabel}
+          >
+            {isActionToolbarExpanded ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
+            {t('nodeToolbar.toolbarToggle')}
+          </button>
+        </ReactFlowNodeToolbar>
+      )}
+      {selectedNodeToolbarMode === 'full' && isActionToolbarExpanded && (
+        <NodeActionToolbar
+          node={selectedNode}
+          offset={shouldCollapseActionToolbar ? EXPANDED_ACTION_TOOLBAR_OFFSET : undefined}
+        />
+      )}
       {selectedNodeToolbarMode === 'deleteOnly' && <NodeDeleteToolbar nodeId={selectedNode.id} />}
 
       {/* Global panel rendering — works for all node types */}

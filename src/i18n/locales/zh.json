@@ -91,6 +91,9 @@
     "promptPresetMenuTitle": "提示词预设",
     "promptPresetEmpty": "暂无提示词预设",
     "managePromptPresets": "去设置管理预设",
+    "toolbarToggle": "功能",
+    "expandToolbar": "展开功能",
+    "collapseToolbar": "收起功能",
     "zoomPreview": "预览",
     "options": {
       "highDefinition": "高清",
@@ -1170,6 +1173,8 @@
     "ignoreAtTagWhenCopyingAndGeneratingDesc": "启用后，复制文本和写入图片分镜元数据时会忽略类似“@图1”的标签；发送生成请求时仅移除“@”并保留“图1”。",
     "appendParameterConstraintsToPrompt": "提示词加强参数约束",
     "appendParameterConstraintsToPromptDesc": "启用后，提交生成前会把当前比例、分辨率和张数写入最终提示词，减少模型忽略画幅或清晰度设置的情况。",
+    "collapseNodeActionToolbarByDefault": "图片节点功能条折叠显示",
+    "collapseNodeActionToolbarByDefaultDesc": "启用后，AI 图片和图片节点被选中时只显示一个小提示，点击后展开上方功能框，再点收起。",
     "useLegacyPanoramaControlDirection": "全景拖拽使用旧方向",
     "useLegacyPanoramaControlDirectionDesc": "关闭时使用新的反向拖拽方向；开启后恢复旧版全景查看器的拖拽和方向键方向。",
     "panoramaControlSensitivity": "全景操作灵敏度",

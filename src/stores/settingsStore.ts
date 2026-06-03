@@ -52,6 +52,7 @@ interface SettingsState {
   storyboardGenAutoInferEmptyFrame: boolean;
   ignoreAtTagWhenCopyingAndGenerating: boolean;
   appendParameterConstraintsToPrompt: boolean;
+  collapseNodeActionToolbarByDefault: boolean;
   enableStoryboardGenGridPreviewShortcut: boolean;
   showStoryboardGenAdvancedRatioControls: boolean;
   useLegacyPanoramaControlDirection: boolean;
@@ -81,6 +82,7 @@ interface SettingsState {
   setStoryboardGenAutoInferEmptyFrame: (enabled: boolean) => void;
   setIgnoreAtTagWhenCopyingAndGenerating: (enabled: boolean) => void;
   setAppendParameterConstraintsToPrompt: (enabled: boolean) => void;
+  setCollapseNodeActionToolbarByDefault: (enabled: boolean) => void;
   setEnableStoryboardGenGridPreviewShortcut: (enabled: boolean) => void;
   setShowStoryboardGenAdvancedRatioControls: (enabled: boolean) => void;
   setUseLegacyPanoramaControlDirection: (enabled: boolean) => void;
@@ -375,6 +377,7 @@ export const useSettingsStore = create<SettingsState>()(
       storyboardGenAutoInferEmptyFrame: true,
       ignoreAtTagWhenCopyingAndGenerating: true,
       appendParameterConstraintsToPrompt: false,
+      collapseNodeActionToolbarByDefault: false,
       enableStoryboardGenGridPreviewShortcut: false,
       showStoryboardGenAdvancedRatioControls: false,
       useLegacyPanoramaControlDirection: false,
@@ -421,6 +424,8 @@ export const useSettingsStore = create<SettingsState>()(
         set({ ignoreAtTagWhenCopyingAndGenerating: enabled }),
       setAppendParameterConstraintsToPrompt: (enabled) =>
         set({ appendParameterConstraintsToPrompt: enabled }),
+      setCollapseNodeActionToolbarByDefault: (enabled) =>
+        set({ collapseNodeActionToolbarByDefault: enabled }),
       setEnableStoryboardGenGridPreviewShortcut: (enabled) =>
         set({ enableStoryboardGenGridPreviewShortcut: enabled }),
       setShowStoryboardGenAdvancedRatioControls: (enabled) =>
@@ -623,6 +628,7 @@ export const useSettingsStore = create<SettingsState>()(
           apiKeys?: ProviderApiKeys;
           ignoreAtTagWhenCopyingAndGenerating?: boolean;
           appendParameterConstraintsToPrompt?: boolean;
+          collapseNodeActionToolbarByDefault?: boolean;
           grsaiNanoBananaProModel?: string;
           hideProviderGuidePopover?: boolean;
           canvasEdgeRoutingMode?: CanvasEdgeRoutingMode | string;
@@ -651,6 +657,8 @@ export const useSettingsStore = create<SettingsState>()(
           state.ignoreAtTagWhenCopyingAndGenerating ?? true;
         const appendParameterConstraintsToPrompt =
           state.appendParameterConstraintsToPrompt ?? false;
+        const collapseNodeActionToolbarByDefault =
+          state.collapseNodeActionToolbarByDefault ?? false;
         const migratedLightingTemplate = (() => {
           const trimmed = state.lightingPromptTemplate?.trim() ?? '';
           if (!trimmed) return DEFAULT_LIGHTING_PROMPT_TEMPLATE;
@@ -675,6 +683,7 @@ export const useSettingsStore = create<SettingsState>()(
             apiKeys: migratedApiKeys,
             ignoreAtTagWhenCopyingAndGenerating,
             appendParameterConstraintsToPrompt,
+            collapseNodeActionToolbarByDefault,
             grsaiNanoBananaProModel: normalizeGrsaiNanoBananaProModel(
               state.grsaiNanoBananaProModel
             ),
@@ -707,6 +716,7 @@ export const useSettingsStore = create<SettingsState>()(
           apiKeys: state.apiKey ? { ppio: normalizeApiKey(state.apiKey) } : {},
           ignoreAtTagWhenCopyingAndGenerating,
           appendParameterConstraintsToPrompt,
+          collapseNodeActionToolbarByDefault,
           grsaiNanoBananaProModel: normalizeGrsaiNanoBananaProModel(
             state.grsaiNanoBananaProModel
           ),

@@ -101,11 +101,283 @@ function resolveProviderAndModel(modelId: string): { cfg: CustomProviderConfig; 
   return { cfg, model: modelName };
 }
 
+function isModernProviderConfig(cfg: CustomProviderConfig): boolean {
+  return cfg.extraParams?.providerConfigVersion === 'new-v1';
+}
+
+function modernProviderKind(cfg: CustomProviderConfig): string {
+  return typeof cfg.extraParams?.providerKind === 'string' ? cfg.extraParams.providerKind : '';
+}
+
+function isOpenAiImagesLikeModernProvider(cfg: CustomProviderConfig): boolean {
+  const kind = modernProviderKind(cfg);
+  return kind === 'openai-images' || kind === 'midjourney';
+}
+
+function compactRecord(record: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(record).filter(([, value]) =>
+      value !== undefined
+      && value !== null
+      && value !== ''
+      && !(Array.isArray(value) && value.length === 0)
+    )
+  );
+}
+
+function pickAllowedParams(
+  source: Record<string, unknown>,
+  allowedKeys: readonly string[],
+): Record<string, unknown> {
+  const allowed = new Set(allowedKeys);
+  return Object.fromEntries(
+    Object.entries(source).filter(([key, value]) => allowed.has(key) && value !== undefined && value !== null && value !== '')
+  );
+}
+
+const OPENAI_IMAGE_PARAM_KEYS = [
+  'background',
+  'moderation',
+  'output_compression',
+  'output_format',
+  'quality',
+  'response_format',
+  'style',
+  'user',
+] as const;
+
+function normalizeResolutionTier(value: unknown): '1k' | '2k' | '4k' | 'auto' | null {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return null;
+  if (normalized === 'auto' || normalized === '智能' || normalized === '自动') return 'auto';
+  if (/^(0\.5k|512)$/.test(normalized)) return '1k';
+  if (/^(1k|1024|1024p)$/.test(normalized)) return '1k';
+  if (/^(2k|2048|1080p|1440p)$/.test(normalized)) return '2k';
+  if (/^(4k|4096|2160p|uhd)$/.test(normalized)) return '4k';
+  return null;
+}
+
+function normalizeRatioKey(value: string | undefined): string {
+  if (!value || value === 'auto') return '1:1';
+  return value.trim();
+}
+
+const MODERN_SIZE_BY_TIER: Record<'1k' | '2k' | '4k', Record<string, string>> = {
+  '1k': {
+    '1:1': '1024x1024',
+    '16:9': '1024x576',
+    '9:16': '576x1024',
+    '4:3': '1024x768',
+    '3:4': '768x1024',
+    '3:2': '1024x682',
+    '2:3': '682x1024',
+    '21:9': '1344x576',
+    '2:1': '1024x512',
+    '4:1': '1024x256',
+  },
+  '2k': {
+    '1:1': '2048x2048',
+    '16:9': '2048x1152',
+    '9:16': '1152x2048',
+    '4:3': '2048x1536',
+    '3:4': '1536x2048',
+    '3:2': '2048x1365',
+    '2:3': '1365x2048',
+    '21:9': '2560x1080',
+    '2:1': '2048x1024',
+    '4:1': '2048x512',
+  },
+  '4k': {
+    '1:1': '2048x2048',
+    '16:9': '3840x2160',
+    '9:16': '2160x3840',
+    '4:3': '3840x2880',
+    '3:4': '2880x3840',
+    '3:2': '3840x2560',
+    '2:3': '2560x3840',
+    '21:9': '5120x2160',
+    '2:1': '4096x2048',
+    '4:1': '4096x1024',
+  },
+};
+
+function resolveModernOpenAiSize(cfg: CustomProviderConfig, request: GenerateRequest): string {
+  const selectedResolution = request.extra_params?.resolutionType ?? request.size;
+  if (isPixelSize(selectedResolution)) return selectedResolution.trim();
+  const tier = normalizeResolutionTier(selectedResolution);
+  if (tier === 'auto') return 'auto';
+  if (tier) {
+    const ratioKey = normalizeRatioKey(request.aspect_ratio);
+    const byRatio = MODERN_SIZE_BY_TIER[tier][ratioKey];
+    if (byRatio) return byRatio;
+  }
+  if (isPixelSize(request.size)) return request.size.trim();
+  const configuredSizes = (cfg.supportedResolutions ?? []).filter(isPixelSize).map((size) => size.trim());
+  return pickClosestPixelSize(configuredSizes, request.aspect_ratio)
+    ?? fallbackPixelSizeForAspectRatio(request.aspect_ratio);
+}
+
+function referenceImageToGeminiPart(imageSource: string): Record<string, unknown> | null {
+  const trimmed = imageSource.trim();
+  if (!trimmed.startsWith('data:')) return null;
+  const match = /^data:([^;,]+)(?:;[^,]*)?,(.+)$/s.exec(trimmed);
+  if (!match) return null;
+  return {
+    inline_data: {
+      mime_type: match[1] || 'image/png',
+      data: match[2],
+    },
+  };
+}
+
+function resolveModernRatioForPrompt(request: GenerateRequest): string | undefined {
+  const ratio = request.aspect_ratio?.trim();
+  return ratio && ratio !== 'auto' ? ratio : undefined;
+}
+
+function resolveModernImageTier(request: GenerateRequest): '1K' | '2K' | '4K' | undefined {
+  const tier = normalizeResolutionTier(request.extra_params?.resolutionType ?? request.size);
+  if (tier === '1k') return '1K';
+  if (tier === '2k') return '2K';
+  if (tier === '4k') return '4K';
+  return undefined;
+}
+
+function modelLooksLikeGeminiHighResImageModel(modelName: string): boolean {
+  const normalized = modelName.toLowerCase();
+  return normalized.includes('3.1')
+    || normalized.includes('3-pro')
+    || normalized.includes('pro-image')
+    || normalized.includes('imagen-4');
+}
+
+function buildModernRequestBody(
+  cfg: CustomProviderConfig,
+  modelName: string,
+  request: GenerateRequest,
+): unknown {
+  const kind = modernProviderKind(cfg);
+  const defaultRequestParams = resolveDefaultRequestParams(cfg);
+  const userExtra = { ...(request.extra_params ?? {}) } as Record<string, unknown>;
+  delete userExtra.resolutionType;
+  delete userExtra.aspect_ratio;
+  delete userExtra.aspectRatio;
+  delete userExtra.reference_images;
+  delete userExtra.webSearch;
+  delete userExtra.negativePrompt;
+  delete userExtra.modelVersion;
+
+  if (kind === 'openai-responses') {
+    const size = resolveModernOpenAiSize(cfg, request);
+    const imageModel = String(
+      userExtra.image_generation_model
+      ?? userExtra.imageGenerationModel
+      ?? defaultRequestParams.image_generation_model
+      ?? defaultRequestParams.imageGenerationModel
+      ?? 'gpt-image-2'
+    ).trim();
+    delete userExtra.image_generation_model;
+    delete userExtra.imageGenerationModel;
+    const toolParams = compactRecord({
+      type: 'image_generation',
+      model: imageModel,
+      size,
+      ...pickAllowedParams(defaultRequestParams, OPENAI_IMAGE_PARAM_KEYS),
+      ...pickAllowedParams(userExtra, OPENAI_IMAGE_PARAM_KEYS),
+    });
+    return compactRecord({
+      model: modelName,
+      input: request.prompt,
+      tools: [toolParams],
+      tool_choice: { type: 'image_generation' },
+    });
+  }
+
+  if (kind === 'google-gemini') {
+    const referenceParts = (request.reference_images ?? [])
+      .map(referenceImageToGeminiPart)
+      .filter((part): part is Record<string, unknown> => Boolean(part));
+    const imageConfig = compactRecord({
+      aspectRatio: resolveModernRatioForPrompt(request),
+      imageSize: modelLooksLikeGeminiHighResImageModel(modelName)
+        ? resolveModernImageTier(request)
+        : undefined,
+    });
+    const responseFormat = Object.keys(imageConfig).length > 0
+      ? { image: imageConfig }
+      : undefined;
+    return {
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: request.prompt },
+            ...referenceParts,
+          ],
+        },
+      ],
+      generationConfig: compactRecord({
+        responseModalities: ['TEXT', 'IMAGE'],
+        responseFormat,
+      }),
+    };
+  }
+
+  if (kind === 'openai-images' || kind === 'midjourney') {
+    const size = resolveModernOpenAiSize(cfg, request);
+    return compactRecord({
+      model: modelName,
+      prompt: request.prompt,
+      size,
+      n: 1,
+      ...pickAllowedParams(defaultRequestParams, OPENAI_IMAGE_PARAM_KEYS),
+      ...pickAllowedParams(userExtra, OPENAI_IMAGE_PARAM_KEYS),
+    });
+  }
+
+  if (kind === 'fal') {
+    return compactRecord({
+      prompt: request.prompt,
+      image_size: resolveModernOpenAiSize(cfg, request),
+      num_images: 1,
+      ...defaultRequestParams,
+      ...userExtra,
+      ...(request.reference_images?.[0] ? { image_url: request.reference_images[0] } : {}),
+    });
+  }
+
+  if (kind === 'replicate') {
+    return {
+      ...defaultRequestParams,
+      input: {
+        prompt: request.prompt,
+        aspect_ratio: request.aspect_ratio,
+        ...(request.reference_images?.[0] ? { image: request.reference_images[0] } : {}),
+        ...(asPlainRecord(defaultRequestParams.input) ?? {}),
+        ...userExtra,
+      },
+    };
+  }
+
+  return compactRecord({
+    model: modelName,
+    prompt: request.prompt,
+    size: resolveModernOpenAiSize(cfg, request),
+    ...defaultRequestParams,
+    ...userExtra,
+  });
+}
+
 function buildRequestBody(
   cfg: CustomProviderConfig,
   modelName: string,
   request: GenerateRequest
 ): unknown {
+  if (isModernProviderConfig(cfg)) {
+    return buildModernRequestBody(cfg, modelName, request);
+  }
+
   const ratio = request.aspect_ratio === 'auto' ? undefined : request.aspect_ratio;
   const defaultRequestParams = resolveDefaultRequestParams(cfg);
 
@@ -510,7 +782,9 @@ function buildRequestHeaders(
   method: 'GET' | 'POST' = 'POST',
 ): Record<string, string> {
   const headers: Record<string, string> = {};
-  if (cfg.apiKey?.trim()) {
+  if (modernProviderKind(cfg) === 'google-gemini' && cfg.apiKey?.trim()) {
+    headers['x-goog-api-key'] = cfg.apiKey.trim();
+  } else if (cfg.apiKey?.trim()) {
     headers.Authorization = `Bearer ${cfg.apiKey.trim()}`;
   }
   if (method === 'POST' && bodyMode === 'json') {
@@ -639,17 +913,57 @@ function buildMultipartBody(
   return { fields, files };
 }
 
+function resolveModernProviderBodyMode(
+  cfg: CustomProviderConfig,
+  request: GenerateRequest,
+): CustomProviderBodyMode | null {
+  if (!isModernProviderConfig(cfg)) return null;
+  if (
+    isOpenAiImagesLikeModernProvider(cfg)
+    && (request.reference_images?.length ?? 0) > 0
+  ) {
+    return 'multipart';
+  }
+  return null;
+}
+
 function resolveModelListUrl(cfg: CustomProviderConfig): string {
   const base = cfg.baseUrl.replace(/\/+$/, '');
   const path = (cfg.modelListEndpointPath ?? '').trim() || '/models';
   return appendQueryParams(`${base}${path.startsWith('/') ? '' : '/'}${path}`, cfg.queryParams ?? {});
 }
 
-function resolveEndpointUrl(cfg: CustomProviderConfig, dynamicQueryParams?: Record<string, string>): string {
+function resolveModernEndpointPath(cfg: CustomProviderConfig, request: GenerateRequest): string | null {
+  if (!isModernProviderConfig(cfg)) return null;
+  if (isOpenAiImagesLikeModernProvider(cfg) && (request.reference_images?.length ?? 0) > 0) {
+    const editPath = cfg.extraParams?.imageEditEndpointPath;
+    return typeof editPath === 'string' && editPath.trim()
+      ? editPath.trim()
+      : '/v1/images/edits';
+  }
+  const generationPath = cfg.extraParams?.imageGenerationEndpointPath;
+  if (isOpenAiImagesLikeModernProvider(cfg) && typeof generationPath === 'string' && generationPath.trim()) {
+    return generationPath.trim();
+  }
+  return null;
+}
+
+function resolveEndpointUrlForRequest(
+  cfg: CustomProviderConfig,
+  modelName: string,
+  request: GenerateRequest,
+  dynamicQueryParams?: Record<string, string>,
+): string {
   const base = cfg.baseUrl.replace(/\/+$/, '');
-  const path = (cfg.endpointPath ?? '').trim();
-  const joined = path ? `${base}${path.startsWith('/') ? '' : '/'}${path}` : guessDefaultPath(cfg.apiStyle, base);
-  return appendQueryParams(joined, {
+  const modernPath = resolveModernEndpointPath(cfg, request);
+  const configuredPath = (modernPath ?? cfg.endpointPath ?? '').trim();
+  const joined = configuredPath
+    ? `${base}${configuredPath.startsWith('/') ? '' : '/'}${configuredPath}`
+    : guessDefaultPath(cfg.apiStyle, base);
+  const withModel = joined
+    .replace(/\{model\}/g, encodeURIComponent(modelName))
+    .replace(/\{modelId\}/g, encodeURIComponent(modelName));
+  return appendQueryParams(withModel, {
     ...(cfg.queryParams ?? {}),
     ...(dynamicQueryParams ?? {}),
   });
@@ -1137,7 +1451,9 @@ function formatUnknownError(error: unknown): string {
 
 function buildAuthenticatedImageFetchHeaders(cfg: CustomProviderConfig): Record<string, string> {
   const headers: Record<string, string> = {};
-  if (cfg.apiKey?.trim()) {
+  if (modernProviderKind(cfg) === 'google-gemini' && cfg.apiKey?.trim()) {
+    headers['x-goog-api-key'] = cfg.apiKey.trim();
+  } else if (cfg.apiKey?.trim()) {
     headers.Authorization = `Bearer ${cfg.apiKey.trim()}`;
   }
   Object.entries(cfg.extraHeaders ?? {}).forEach(([key, value]) => {
@@ -1191,7 +1507,8 @@ async function sendGenerationRequest(
   timeoutMs?: number,
 ): Promise<unknown> {
   const method = cfg.httpMethod ?? 'POST';
-  const bodyMode = resolveCustomProviderBodyMode(cfg, request.extra_params);
+  const bodyMode = resolveModernProviderBodyMode(cfg, request)
+    ?? resolveCustomProviderBodyMode(cfg, request.extra_params);
   if (bodyMode === 'signed') {
     throw new Error(
       '该配置被识别为签名鉴权/代理路线（signed_proxy_required）。当前通用直连不会生成 AK/SK、时间戳或 Action 签名；请改为后端代理后的普通 JSON/multipart 接口，或重新导入为可直连预设。'
@@ -1201,8 +1518,10 @@ async function sendGenerationRequest(
     ? buildRequestBody(cfg, model, request)
     : undefined;
   const multipart = bodyMode === 'multipart' ? buildMultipartBody(cfg, model, request) : undefined;
-  const url = resolveEndpointUrl(
+  const url = resolveEndpointUrlForRequest(
     cfg,
+    model,
+    request,
     method === 'GET' && body ? buildQueryParamsFromRequestBody(body) : undefined,
   );
   const headers = buildRequestHeaders(cfg, bodyMode, method);

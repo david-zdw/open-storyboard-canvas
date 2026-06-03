@@ -1,5 +1,7 @@
 export type SettingsCategory =
   | 'providers'
+  | 'providersNew'
+  | 'providersOld'
   | 'customProviders'
   | 'dreamina'
   | 'promptManagement'

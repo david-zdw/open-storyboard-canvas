@@ -34,6 +34,7 @@ import {
 
 interface NodeActionToolbarProps {
   node: CanvasNode;
+  offset?: number;
 }
 
 const TOOLBAR_BUTTON_RADIUS_CLASS = 'rounded-full';
@@ -57,7 +58,7 @@ function resolvePromptPresetMenuPosition(button: HTMLButtonElement): { x: number
   };
 }
 
-export const NodeActionToolbar = memo(({ node }: NodeActionToolbarProps) => {
+export const NodeActionToolbar = memo(({ node, offset = NODE_TOOLBAR_OFFSET }: NodeActionToolbarProps) => {
   const { t } = useTranslation();
   const deleteNode = useCanvasStore((state) => state.deleteNode);
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
@@ -416,6 +417,12 @@ export const NodeActionToolbar = memo(({ node }: NodeActionToolbarProps) => {
           : TOOLBAR_NEUTRAL_BUTTON_CLASS
       } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
       onClick={disabled ? undefined : handleOpenPromptPresetMenu}
+      onMouseEnter={disabled || caseKind !== 'B'
+        ? undefined
+        : (event) => {
+          promptPresetAnchorRef.current = event.currentTarget;
+          setPromptPresetMenu(resolvePromptPresetMenuPosition(event.currentTarget));
+        }}
       title={t('nodeToolbar.promptPreset') as string}
     >
       {caseKind === 'B' && selectedPromptPresetId && <Check className="h-3.5 w-3.5 text-white" />}
@@ -504,7 +511,7 @@ export const NodeActionToolbar = memo(({ node }: NodeActionToolbarProps) => {
       isVisible
       position={NODE_TOOLBAR_POSITION}
       align={NODE_TOOLBAR_ALIGN}
-      offset={NODE_TOOLBAR_OFFSET}
+      offset={offset}
       className={NODE_TOOLBAR_CLASS}
     >
       <UiPanel className="flex items-center gap-1 rounded-full p-1">
